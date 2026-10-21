@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TaskFlow - Smart Personal Task Management System with C++17 OOP Backend, Rule-Based Planner, and Workload Capacity Tracking">
+    <title>TaskFlow – Smart Personal Task Management System</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="brand-name">TaskFlow</div>
+                    <div class="brand-tag">Personal Edition • C++17</div>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu" aria-label="Main Navigation">
+                <button id="nav-btn-dashboard" class="nav-item active" onclick="app.navigate('dashboard')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    <span>Dashboard</span>
+                </button>
+                <button id="nav-btn-tasks" class="nav-item" onclick="app.navigate('tasks')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    <span>Tasks</span>
+                    <span id="nav-badge-tasks" class="nav-badge">0</span>
+                </button>
+                <button id="nav-btn-projects" class="nav-item" onclick="app.navigate('projects')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    <span>Projects</span>
+                    <span id="nav-badge-projects" class="nav-badge">0</span>
+                </button>
+                <button id="nav-btn-planner" class="nav-item" onclick="app.navigate('planner')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>Smart Planner</span>
+                </button>
+                <button id="nav-btn-calendar" class="nav-item" onclick="app.navigate('calendar')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span>Calendar</span>
+                </button>
+                <button id="nav-btn-reports" class="nav-item" onclick="app.navigate('reports')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    <span>Reports</span>
+                </button>
+                <button id="nav-btn-history" class="nav-item" onclick="app.navigate('history')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Activity Log</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="server-status">
+                    <span class="status-dot"></span>
+                    <span>C++ Server: Active</span>
+                </div>
+                <button class="btn-sidebar-settings" onclick="app.openSettingsModal()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span>Workload Settings</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <h1 id="page-title" class="page-title">Personal Dashboard</h1>
+                    <p id="page-subtitle" class="page-subtitle">Track your focus, tasks, projects, and capacity</p>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="clock-badge" id="clock-display">Today</div>
+                    <button id="btn-header-add-task" class="btn btn-primary" onclick="app.openTaskModal()">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>New Task</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Notification Alerts Banner -->
+            <div id="alerts-container" class="alert-banner-container"></div>
+
+            <!-- VIEW 1: DASHBOARD -->
+            <section id="view-dashboard" class="content-view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Total Tasks</span>
+                        </div>
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-footer" id="stat-pending-hours-sub">0.0h pending work</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">In Progress</span>
+                        </div>
+                        <div class="stat-value" id="stat-in-progress">0</div>
+                        <div class="stat-footer" id="stat-pending-sub">0 Pending</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Completed</span>
+                        </div>
+                        <div class="stat-value" id="stat-completed">0</div>
+                        <div class="stat-footer">
+                            <span class="badge badge-completed" id="stat-completion-pct">0% Rate</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Overdue</span>
+                        </div>
+                        <div class="stat-value text-danger" id="stat-overdue">0</div>
+                        <div class="stat-footer" id="stat-due-today-sub">0 Due Today</div>
+                    </div>
+                </div>
+
+                <!-- Hero Section: Smart Next Task & Completion Progress -->
+                <div class="dashboard-hero-grid">
+                    <div class="card planner-hero-card">
+                        <div class="card-header-flex">
+                            <span class="planner-badge-tag">RECOMMENDED NEXT TASK</span>
+                            <span class="badge badge-sage" id="hero-score-badge">Score: 0</span>
+                        </div>
+                        <div id="hero-recommendation-content">
+                            <div class="empty-state">No pending tasks to recommend right now.</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2 class="card-title">Completion Velocity</h2>
+                        <div class="radial-progress-box">
+                            <div class="radial-svg-wrap">
+                                <svg class="progress-ring" width="110" height="110">
+                                    <circle stroke="#E5E8E1" stroke-width="8" cx="55" cy="55" r="44" fill="transparent"/>
+                                    <circle id="radial-progress-bar" class="progress-ring-circle" stroke="#245C4A" stroke-width="8" stroke-linecap="round" cx="55" cy="55" r="44" fill="transparent" stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+                                </svg>
+                                <div class="radial-text-center">
+                                    <span class="radial-pct" id="radial-pct-text">0%</span>
+                                    <span class="radial-sub">Done</span>
+                                </div>
+                            </div>
+                            <div class="progress-legend-list">
+                                <div class="legend-item">
+                                    <span><span class="legend-dot dot-completed"></span>Completed</span>
+                                    <strong id="legend-completed-count">0</strong>
+                                </div>
+                                <div class="legend-item">
+                                    <span><span class="legend-dot dot-inprogress"></span>In Progress</span>
+                                    <strong id="legend-inprogress-count">0</strong>
+                                </div>
+                                <div class="legend-item">
+                                    <span><span class="legend-dot dot-pending"></span>Pending</span>
+                                    <strong id="legend-pending-count">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Triple Grid: High Priority & Upcoming & Recent Feed -->
+                <div class="dashboard-triple-grid">
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <h2 class="card-title">High Priority</h2>
+                            <button class="btn btn-secondary btn-sm" onclick="app.filterByPriority('High')">View</button>
+                        </div>
+                        <div class="card-scrollable" id="dashboard-high-priority-list">
+                            <div class="empty-state">No high priority tasks.</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <h2 class="card-title">Approaching Deadlines</h2>
+                            <button class="btn btn-secondary btn-sm" onclick="app.navigate('calendar')">Calendar</button>
+                        </div>
+                        <div class="card-scrollable" id="dashboard-deadlines-list">
+                            <div class="empty-state">No deadlines within 7 days.</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <h2 class="card-title">Recent Activity</h2>
+                            <button class="btn btn-secondary btn-sm" onclick="app.navigate('history')">History</button>
+                        </div>
+                        <div class="card-scrollable" id="dashboard-activity-list">
+                            <div class="empty-state">No recent activity.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: TASK MANAGEMENT -->
+            <section id="view-tasks" class="content-view">
+                <div class="filter-bar card">
+                    <div class="search-box">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" id="task-search-input" placeholder="Search tasks by title, description, tags..." oninput="app.handleSearchInput(this.value)">
+                    </div>
+
+                    <div class="filter-group">
+                        <select id="task-filter-status" class="form-select" onchange="app.handleFilterChange()">
+                            <option value="All">All Statuses</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+
+                        <select id="task-filter-priority" class="form-select" onchange="app.handleFilterChange()">
+                            <option value="All">All Priorities</option>
+                            <option value="Critical">Critical</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+
+                        <select id="task-filter-category" class="form-select" onchange="app.handleFilterChange()">
+                            <option value="All">All Categories</option>
+                        </select>
+
+                        <select id="task-filter-project" class="form-select" onchange="app.handleFilterChange()">
+                            <option value="All">All Projects</option>
+                        </select>
+
+                        <select id="task-sort-by" class="form-select" onchange="app.handleFilterChange()">
+                            <option value="deadline">Sort: Deadline</option>
+                            <option value="priority">Sort: Priority</option>
+                            <option value="created">Sort: Created Date</option>
+                            <option value="title">Sort: Title</option>
+                        </select>
+
+                        <button id="btn-sort-toggle" class="btn-icon" onclick="app.toggleSortOrder()" title="Toggle Asc/Desc">
+                            <span id="sort-order-icon">↑</span>
+                        </button>
+
+                        <button class="btn btn-secondary btn-sm" onclick="app.resetFilters()">Reset</button>
+                    </div>
+                </div>
+
+                <div class="task-table-wrapper card">
+                    <div class="task-table-header">
+                        <div>Status</div>
+                        <div>Task & Notes</div>
+                        <div>Project / Category</div>
+                        <div>Priority</div>
+                        <div>Deadline & Effort</div>
+                        <div>Actions</div>
+                    </div>
+                    <div id="task-list-rows">
+                        <div class="empty-state">No tasks to display. Click 'New Task' to create one.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 3: PROJECT MANAGEMENT -->
+            <section id="view-projects" class="content-view">
+                <div class="card-header-flex" style="margin-bottom: 16px;">
+                    <p class="page-subtitle">Personal projects group deliverables. Deleting a project safely unassigns tasks rather than deleting them.</p>
+                    <button class="btn btn-primary" onclick="app.openProjectModal()">+ New Project</button>
+                </div>
+
+                <div id="projects-grid" class="projects-grid">
+                    <div class="empty-state" style="grid-column: 1 / -1;">No projects created yet.</div>
+                </div>
+            </section>
+
+            <!-- VIEW 4: SMART PRIORITY PLANNER & WORKLOAD -->
+            <section id="view-planner" class="content-view">
+                <div class="card capacity-card">
+                    <div>
+                        <h2 class="card-title">Daily Work Capacity</h2>
+                        <p class="card-subtitle" style="margin-bottom: 0;">Configure your realistic daily available working hours to prevent overcommitting.</p>
+                    </div>
+                    <div class="capacity-controls">
+                        <input type="number" id="planner-capacity-input" class="form-input" min="1" max="24" step="0.5" style="width: 70px;">
+                        <span>hrs/day</span>
+                        <button class="btn btn-primary btn-sm" onclick="app.saveCapacity()">Save</button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 16px;">
+                    <h2 class="card-title">Rule-Based Priority Recommendation</h2>
+                    <p class="card-subtitle">Transparent multi-factor scoring based on priority weight, deadline urgency, status, and duration.</p>
+                    <div id="planner-detailed-hero"></div>
+                </div>
+
+                <div class="card" style="margin-bottom: 16px;">
+                    <div class="card-header-flex">
+                        <div>
+                            <h2 class="card-title">Smart Overdue Rescheduler</h2>
+                            <p class="card-subtitle">Alternative deadline suggestions generated from upcoming daily capacity. Deadlines are never changed without your approval.</p>
+                        </div>
+                        <span class="badge badge-warning" id="reschedule-badge">0 Suggestions</span>
+                    </div>
+                    <div id="reschedule-list">
+                        <div class="empty-state">No overdue tasks requiring rescheduling.</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">14-Day Workload Horizon</h2>
+                    <p class="card-subtitle">Pending hours per calendar date compared against your configured daily capacity.</p>
+                    <div id="workload-chart" class="workload-horizon-chart">
+                        <div class="empty-state" style="width: 100%;">No scheduled tasks in the next 14 days.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 5: CALENDAR VIEW -->
+            <section id="view-calendar" class="content-view">
+                <div class="calendar-grid-wrap">
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <div class="action-btn-group">
+                                <button class="btn btn-secondary btn-sm" onclick="app.calPrev()">&lt;</button>
+                                <button class="btn btn-secondary btn-sm" onclick="app.calToday()">Today</button>
+                                <button class="btn btn-secondary btn-sm" onclick="app.calNext()">&gt;</button>
+                            </div>
+                            <h2 class="card-title" id="cal-month-title">October 2026</h2>
+                        </div>
+                        <div class="calendar-day-header">
+                            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                        </div>
+                        <div id="cal-matrix" class="calendar-matrix"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <h2 class="card-title" id="cal-selected-label">Schedule</h2>
+                            <button class="btn btn-primary btn-sm" onclick="app.openTaskForSelectedDate()">+ Add</button>
+                        </div>
+                        <div id="cal-selected-tasks" class="card-scrollable">
+                            <div class="empty-state">Select a date on the calendar to view tasks.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 6: REPORTS & ANALYTICS -->
+            <section id="view-reports" class="content-view">
+                <div class="reports-grid">
+                    <div class="card">
+                        <h2 class="card-title">Task Status Distribution</h2>
+                        <div id="report-status-bars" style="margin-top: 14px;"></div>
+                    </div>
+
+                    <div class="card">
+                        <h2 class="card-title">Priority Breakdown</h2>
+                        <div id="report-priority-bars" style="margin-top: 14px;"></div>
+                    </div>
+
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <h2 class="card-title">Personal Project Progress</h2>
+                        <div id="report-projects-bars" style="margin-top: 14px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 7: ACTIVITY LOG -->
+            <section id="view-history" class="content-view">
+                <div class="card">
+                    <div class="card-header-flex">
+                        <h2 class="card-title">System Audit Log</h2>
+                        <button class="btn btn-secondary btn-sm" onclick="app.loadActivities()">Refresh</button>
+                    </div>
+                    <div id="activity-timeline-list">
+                        <div class="empty-state">No activity logged yet.</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODALS -->
+    <!-- ========================================================================= -->
+
+    <!-- Modal 1: Task Create/Edit -->
+    <div id="modal-task" class="modal-backdrop" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="modal-task-title" class="modal-title">Create Task</h3>
+                <button class="modal-close-btn" onclick="app.closeTaskModal()">&times;</button>
+            </div>
+            <form id="form-task" onsubmit="app.handleTaskSubmit(event)">
+                <input type="hidden" id="task-id" value="">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="task-title">Task Title *</label>
+                        <input type="text" id="task-title" class="form-input" placeholder="e.g., Prepare viva presentation" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="task-priority">Priority</label>
+                            <select id="task-priority" class="form-select">
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="task-status">Status</label>
+                            <select id="task-status" class="form-select">
+                                <option value="Pending" selected>Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="task-deadline">Deadline</label>
+                            <input type="date" id="task-deadline" class="form-input">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="task-hours">Estimated Hours *</label>
+                            <input type="number" id="task-hours" class="form-input" min="0.1" max="100.0" step="0.5" value="1.0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="task-category">Category</label>
+                            <input type="text" id="task-category" class="form-input" list="cat-list" value="Study">
+                            <datalist id="cat-list">
+                                <option value="Study">
+                                <option value="Work">
+                                <option value="Personal">
+                                <option value="Health">
+                                <option value="Urgent">
+                            </datalist>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="task-project">Project</label>
+                            <select id="task-project" class="form-select">
+                                <option value="">None (Independent)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="task-tags">Tags (comma separated)</label>
+                        <input type="text" id="task-tags" class="form-input" placeholder="e.g. c++, college, viva">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="task-desc">Description</label>
+                        <textarea id="task-desc" class="form-textarea" rows="2" placeholder="Brief summary of what needs to be done..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="task-notes">Notes</label>
+                        <textarea id="task-notes" class="form-textarea" rows="2" placeholder="Additional details or reference links..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeTaskModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn-task-save">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Project Create/Edit -->
+    <div id="modal-project" class="modal-backdrop" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="modal-project-title" class="modal-title">Create Project</h3>
+                <button class="modal-close-btn" onclick="app.closeProjectModal()">&times;</button>
+            </div>
+            <form id="form-project" onsubmit="app.handleProjectSubmit(event)">
+                <input type="hidden" id="project-id" value="">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="project-title">Project Title *</label>
+                        <input type="text" id="project-title" class="form-input" placeholder="e.g., Semester 4 OOP Mini Project" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="project-category">Category</label>
+                            <input type="text" id="project-category" class="form-input" value="Academic">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="project-deadline">Target Deadline</label>
+                            <input type="date" id="project-deadline" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project-color">Theme Accent</label>
+                        <select id="project-color" class="form-select">
+                            <option value="#245C4A" selected>Forest Green (#245C4A)</option>
+                            <option value="#173D32">Dark Green (#173D32)</option>
+                            <option value="#1E6B7B">Muted Teal (#1E6B7B)</option>
+                            <option value="#C27803">Warm Amber (#C27803)</option>
+                            <option value="#7B241C">Brick Red (#7B241C)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project-desc">Description</label>
+                        <textarea id="project-desc" class="form-textarea" rows="3" placeholder="Goals, scope, or milestones..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeProjectModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn-project-save">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Settings -->
+    <div id="modal-settings" class="modal-backdrop" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-sm">
+            <div class="modal-header">
+                <h3 class="modal-title">Workload Settings</h3>
+                <button class="modal-close-btn" onclick="app.closeSettingsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="settings-modal-cap">Configured Daily Work Capacity (Hours/Day)</label>
+                    <input type="number" id="settings-modal-cap" class="form-input" min="1.0" max="24.0" step="0.5" value="6.0">
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                        The Workload Analyzer compares scheduled hours to this limit to warn you of potential bottlenecks.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeSettingsModal()">Close</button>
+                <button class="btn btn-primary" onclick="app.saveCapacityFromModal()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Confirmation Dialog -->
+    <div id="modal-confirm" class="modal-backdrop" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-sm">
+            <div class="modal-header">
+                <h3 id="confirm-title" class="modal-title">Confirm Action</h3>
+                <button class="modal-close-btn" onclick="app.closeConfirmModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeConfirmModal()">Cancel</button>
+                <button class="btn btn-danger" id="btn-confirm-ok">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT APPLICATION CONTROLLER -->
+    <!-- ========================================================================= -->
+    <script>
+    class TaskFlowApp {
+        constructor() {
+            this.api = '/api';
+            this.activeView = 'dashboard';
+            this.tasks = [];
+            this.projects = [];
+            this.settings = { dailyCapacityHours: 6.0 };
+            this.dashboard = null;
+            this.workload = null;
+            this.rescheduleSuggestions = [];
+            this.activities = [];
+
+            this.filter = {
+                search: '',
+                status: 'All',
+                priority: 'All',
+                category: 'All',
+                projectId: 'All',
+                sortBy: 'deadline',
+                order: 'asc'
+            };
+
+            this.calDate = new Date();
+            this.calSelected = this.fmtDate(new Date());
+            this.confirmCallback = null;
+            this.presetDate = null;
+        }
+
+        async init() {
+            this.initClock();
+            await this.loadSettings();
+            await this.refresh();
+            this.navigate('dashboard');
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.closeTaskModal();
+                    this.closeProjectModal();
+                    this.closeSettingsModal();
+                    this.closeConfirmModal();
+                }
+            });
+        }
+
+        initClock() {
+            const el = document.getElementById('clock-display');
+            const upd = () => {
+                if (el) el.textContent = new Date().toLocaleDateString('en-US', {
+                    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+                });
+            };
+            upd();
+            setInterval(upd, 60000);
+        }
+
+        fmtDate(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        esc(s) {
+            if (!s) return '';
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        async req(endpoint, opts = {}) {
+            try {
+                const res = await fetch(`${this.api}${endpoint}`, {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...opts
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data && data.error ? data.error : `Server Error: ${res.status}`);
+                }
+                return data;
+            } catch (err) {
+                console.error(`API Error [${endpoint}]:`, err);
+                this.toast(err.message, 'error');
+                throw err;
+            }
+        }
+
+        async refresh() {
+            try {
+                await Promise.all([
+                    this.loadTasks(),
+                    this.loadProjects(),
+                    this.loadDashboard(),
+                    this.loadWorkload()
+                ]);
+                this.updateBadges();
+                this.renderAlerts();
+            } catch (e) {
+                console.warn('Initial refresh warning:', e);
+            }
+        }
+
+        async loadSettings() {
+            try {
+                const s = await this.req('/settings');
+                if (s && s.dailyCapacityHours) {
+                    this.settings = s;
+                    const pIn = document.getElementById('planner-capacity-input');
+                    const mIn = document.getElementById('settings-modal-cap');
+                    if (pIn) pIn.value = s.dailyCapacityHours;
+                    if (mIn) mIn.value = s.dailyCapacityHours;
+                }
+            } catch (e) {}
+        }
+
+        async loadTasks() {
+            const p = new URLSearchParams();
+            if (this.filter.search) p.set('search', this.filter.search);
+            if (this.filter.status !== 'All') p.set('status', this.filter.status);
+            if (this.filter.priority !== 'All') p.set('priority', this.filter.priority);
+            if (this.filter.category !== 'All') p.set('category', this.filter.category);
+            if (this.filter.projectId !== 'All') p.set('projectId', this.filter.projectId);
+            if (this.filter.sortBy) p.set('sortBy', this.filter.sortBy);
+            if (this.filter.order) p.set('order', this.filter.order);
+
+            this.tasks = await this.req(`/tasks?${p.toString()}`);
+            this.populateCategories();
+            this.renderTasks();
+            this.renderCalendar();
+        }
+
+        async loadProjects() {
+            this.projects = await this.req('/projects');
+            this.populateProjectSelects();
+            this.renderProjects();
+        }
+
+        async loadDashboard() {
+            this.dashboard = await this.req('/dashboard');
+            this.renderDashboard();
+        }
+
+        async loadWorkload() {
+            this.workload = await this.req('/workload');
+            this.rescheduleSuggestions = await this.req('/reschedule-suggestions');
+            this.renderWorkload();
+            this.renderReschedule();
+        }
+
+        async loadActivities() {
+            this.activities = await this.req('/activity');
+            this.renderHistory();
+        }
+
+        // ---------------------------------------------------------------------
+        // Navigation
+        // ---------------------------------------------------------------------
+        navigate(viewId) {
+            this.activeView = viewId;
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById(`nav-btn-${viewId}`);
+            if (btn) btn.classList.add('active');
+
+            document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+            const view = document.getElementById(`view-${viewId}`);
+            if (view) view.classList.add('active');
+
+            const t = document.getElementById('page-title');
+            const sub = document.getElementById('page-subtitle');
+            switch(viewId) {
+                case 'dashboard':
+                    t.textContent = 'Personal Dashboard';
+                    sub.textContent = 'Track your focus, tasks, projects, and capacity';
+                    this.renderDashboard();
+                    break;
+                case 'tasks':
+                    t.textContent = 'Task Management';
+                    sub.textContent = 'Search, filter, edit, and organize deliverables';
+                    this.renderTasks();
+                    break;
+                case 'projects':
+                    t.textContent = 'Personal Projects';
+                    sub.textContent = 'Track project milestones and completion progress';
+                    this.renderProjects();
+                    break;
+                case 'planner':
+                    t.textContent = 'Smart Priority Planner';
+                    sub.textContent = 'Rule-based scoring, workload balance, and rescheduling';
+                    this.renderWorkload();
+                    this.renderReschedule();
+                    break;
+                case 'calendar':
+                    t.textContent = 'Calendar & Timeline';
+                    sub.textContent = 'Visualize task deadlines on monthly and weekly schedules';
+                    this.renderCalendar();
+                    break;
+                case 'reports':
+                    t.textContent = 'Productivity Reports';
+                    sub.textContent = 'Status distributions, priority counts, and project metrics';
+                    this.renderReports();
+                    break;
+                case 'history':
+                    t.textContent = 'Activity Audit Log';
+                    sub.textContent = 'Chronological history of task creation, status, and edits';
+                    this.loadActivities();
+                    break;
+            }
+        }
+
+        updateBadges() {
+            const tb = document.getElementById('nav-badge-tasks');
+            const pb = document.getElementById('nav-badge-projects');
+            if (tb) tb.textContent = this.tasks.length;
+            if (pb) pb.textContent = this.projects.length;
+        }
+
+        renderAlerts() {
+            const c = document.getElementById('alerts-container');
+            if (!c) return;
+            c.innerHTML = '';
+
+            if (this.dashboard && this.dashboard.overdueTasks > 0) {
+                const b = document.createElement('div');
+                b.className = 'alert-banner alert-danger';
+                b.innerHTML = `
+                    <div class="alert-banner-content">
+                        <strong>Notice:</strong> You have ${this.dashboard.overdueTasks} overdue task(s). Review suggestions in the Smart Planner.
+                    </div>
+                    <button onclick="app.navigate('planner')">Review Suggestions</button>
+                `;
+                c.appendChild(b);
+            }
+
+            if (this.workload && this.workload.overloadedDaysCount > 0) {
+                const b = document.createElement('div');
+                b.className = 'alert-banner alert-warning';
+                b.innerHTML = `
+                    <div class="alert-banner-content">
+                        <strong>Capacity Warning:</strong> Workload exceeds your daily capacity (${this.settings.dailyCapacityHours}h) on ${this.workload.overloadedDays.join(', ')}.
+                    </div>
+                    <button onclick="app.navigate('planner')">View Workload</button>
+                `;
+                c.appendChild(b);
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // Render Dashboard
+        // ---------------------------------------------------------------------
+        renderDashboard() {
+            if (!this.dashboard) return;
+            const d = this.dashboard;
+
+            document.getElementById('stat-total').textContent = d.totalTasks;
+            document.getElementById('stat-in-progress').textContent = d.inProgressTasks;
+            document.getElementById('stat-completed').textContent = d.completedTasks;
+            document.getElementById('stat-overdue').textContent = d.overdueTasks;
+
+            document.getElementById('stat-pending-hours-sub').textContent = `${d.pendingHours}h pending work`;
+            document.getElementById('stat-pending-sub').textContent = `${d.pendingTasks} Pending`;
+            document.getElementById('stat-completion-pct').textContent = `${d.completionPercentage}% Rate`;
+            document.getElementById('stat-due-today-sub').textContent = `${d.dueTodayTasks} Due Today`;
+
+            // Radial Ring
+            const ring = document.getElementById('radial-progress-bar');
+            const txt = document.getElementById('radial-pct-text');
+            if (ring && txt) {
+                const circ = 2 * Math.PI * 44; // ~276.46
+                const offset = circ - (d.completionPercentage / 100) * circ;
+                ring.style.strokeDashoffset = offset;
+                txt.textContent = `${d.completionPercentage}%`;
+            }
+
+            document.getElementById('legend-completed-count').textContent = d.completedTasks;
+            document.getElementById('legend-inprogress-count').textContent = d.inProgressTasks;
+            document.getElementById('legend-pending-count').textContent = d.pendingTasks;
+
+            // Recommendation hero
+            const hero = document.getElementById('hero-recommendation-content');
+            const scoreBadge = document.getElementById('hero-score-badge');
+            const rec = d.recommendation;
+
+            if (rec && rec.hasRecommendation) {
+                const t = rec.task;
+                if (scoreBadge) scoreBadge.textContent = `Priority Score: ${rec.score}`;
+                hero.innerHTML = `
+                    <h3 class="hero-recommendation-title">${this.esc(t.title)}</h3>
+                    <div class="hero-meta-row">
+                        <span class="badge badge-${t.priority.toLowerCase()}">${t.priority} Priority</span>
+                        <span class="badge badge-sage">${this.esc(t.category)}</span>
+                        <span class="badge badge-sage">⏱ ${t.estimatedHours}h</span>
+                        <span class="badge ${t.isOverdue ? 'badge-danger' : 'badge-warning'}">
+                            ${t.isOverdue ? 'Overdue: ' + t.deadline : (t.deadline ? 'Deadline: ' + t.deadline : 'No Deadline')}
+                        </span>
+                    </div>
+                    <div class="hero-rationale-box">
+                        <strong>Planner Rationale:</strong> ${this.esc(rec.rationale)}
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        ${t.status !== 'In Progress' ? `
+                            <button class="btn btn-primary btn-sm" onclick="app.quickStatus('${t.id}', 'In Progress')">▶ Start Task</button>
+                        ` : `
+                            <button class="btn btn-primary btn-sm" onclick="app.quickStatus('${t.id}', 'Completed')">✓ Mark Complete</button>
+                        `}
+                        <button class="btn btn-secondary btn-sm" onclick="app.openTaskForEdit('${t.id}')">Edit Task</button>
+                    </div>
+                `;
+            } else {
+                if (scoreBadge) scoreBadge.textContent = 'All Clear';
+                hero.innerHTML = `
+                    <div class="empty-state">
+                        <p>No active tasks to recommend. All tasks are complete or none exist.</p>
+                        <button class="btn btn-secondary btn-sm" style="margin-top: 8px;" onclick="app.openTaskModal()">+ Add A Task</button>
+                    </div>
+                `;
+            }
+
+            // High priority list
+            const hp = document.getElementById('dashboard-high-priority-list');
+            if (hp) {
+                if (!d.highPriorityTasks || d.highPriorityTasks.length === 0) {
+                    hp.innerHTML = '<div class="empty-state">No high priority tasks.</div>';
+                } else {
+                    hp.innerHTML = d.highPriorityTasks.map(t => `
+                        <div class="mini-item" onclick="app.openTaskForEdit('${t.id}')">
+                            <div>
+                                <div class="mini-item-title">${this.esc(t.title)}</div>
+                                <div class="mini-item-meta">${t.deadline || 'No deadline'} • ${t.estimatedHours}h</div>
+                            </div>
+                            <span class="badge badge-${t.priority.toLowerCase()}">${t.priority}</span>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Deadlines
+            const dl = document.getElementById('dashboard-deadlines-list');
+            if (dl) {
+                if (!d.upcomingDeadlines || d.upcomingDeadlines.length === 0) {
+                    dl.innerHTML = '<div class="empty-state">No deadlines within 7 days.</div>';
+                } else {
+                    dl.innerHTML = d.upcomingDeadlines.map(t => `
+                        <div class="mini-item" onclick="app.openTaskForEdit('${t.id}')">
+                            <div>
+                                <div class="mini-item-title">${this.esc(t.title)}</div>
+                                <div class="mini-item-meta">Due: ${t.deadline} (${t.estimatedHours}h)</div>
+                            </div>
+                            <span class="badge badge-sage">${t.status}</span>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Activity
+            const act = document.getElementById('dashboard-activity-list');
+            if (act) {
+                if (!d.recentActivity || d.recentActivity.length === 0) {
+                    act.innerHTML = '<div class="empty-state">No recent activity.</div>';
+                } else {
+                    act.innerHTML = d.recentActivity.map(a => `
+                        <div class="mini-item" style="cursor: default;">
+                            <div>
+                                <div style="font-size: 12.5px;">${this.esc(a.message)}</div>
+                                <div class="mini-item-meta">${this.fmtTime(a.timestamp)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // Render Tasks
+        // ---------------------------------------------------------------------
+        renderTasks() {
+            const rows = document.getElementById('task-list-rows');
+            if (!rows) return;
+
+            if (this.tasks.length === 0) {
+                rows.innerHTML = '<div class="empty-state">No tasks match your filters. Click "New Task" to create one.</div>';
+                return;
+            }
+
+            const pMap = {};
+            for (const p of this.projects) pMap[p.id] = p;
+
+            rows.innerHTML = this.tasks.map(t => {
+                const isDone = t.status === 'Completed';
+                const p = t.projectId ? pMap[t.projectId] : null;
+
+                return `
+                    <div class="task-row ${isDone ? 'completed' : ''}" id="task-${t.id}">
+                        <div>
+                            <button class="checkbox-toggle ${isDone ? 'checked' : ''}" onclick="app.toggleComplete('${t.id}')">
+                                ${isDone ? '✓' : ''}
+                            </button>
+                        </div>
+                        <div class="task-title-col">
+                            <span class="task-title-text" onclick="app.openTaskForEdit('${t.id}')">${this.esc(t.title)}</span>
+                            ${t.description ? `<span style="font-size: 12px; color: var(--text-secondary);">${this.esc(t.description)}</span>` : ''}
+                            <div class="task-tags-row">
+                                ${t.tags ? t.tags.map(tag => `<span class="tag-badge">#${this.esc(tag)}</span>`).join('') : ''}
+                            </div>
+                        </div>
+                        <div>
+                            ${p ? `<span class="badge badge-sage" style="color: ${p.colorHex || '#245C4A'}; font-weight: 600;">${this.esc(p.title)}</span><br>` : ''}
+                            <span style="font-size: 11px; color: var(--text-secondary);">${this.esc(t.category)}</span>
+                        </div>
+                        <div>
+                            <span class="badge badge-${t.priority.toLowerCase()}">${t.priority}</span>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; font-family: var(--font-mono); color: ${t.isOverdue ? 'var(--priority-critical)' : 'inherit'};">
+                                ${t.isOverdue ? '⚠️ ' : ''}${t.deadline || 'No deadline'}
+                            </div>
+                            <span style="font-size: 11px; color: var(--text-secondary);">⏱ ${t.estimatedHours}h</span>
+                        </div>
+                        <div class="action-btn-group">
+                            <button class="btn-row-action" onclick="app.openTaskForEdit('${t.id}')" title="Edit">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                            <button class="btn-row-action danger" onclick="app.confirmDeleteTask('${t.id}', '${this.esc(t.title)}')" title="Delete">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        handleSearchInput(v) {
+            clearTimeout(this.sTimer);
+            this.sTimer = setTimeout(() => {
+                this.filter.search = v.trim();
+                this.loadTasks();
+            }, 200);
+        }
+
+        handleFilterChange() {
+            this.filter.status = document.getElementById('task-filter-status').value;
+            this.filter.priority = document.getElementById('task-filter-priority').value;
+            this.filter.category = document.getElementById('task-filter-category').value;
+            this.filter.projectId = document.getElementById('task-filter-project').value;
+            this.filter.sortBy = document.getElementById('task-sort-by').value;
+            this.loadTasks();
+        }
+
+        toggleSortOrder() {
+            this.filter.order = (this.filter.order === 'asc') ? 'desc' : 'asc';
+            document.getElementById('sort-order-icon').textContent = (this.filter.order === 'asc') ? '↑' : '↓';
+            this.loadTasks();
+        }
+
+        resetFilters() {
+            this.filter = {
+                search: '', status: 'All', priority: 'All', category: 'All', projectId: 'All', sortBy: 'deadline', order: 'asc'
+            };
+            document.getElementById('task-search-input').value = '';
+            document.getElementById('task-filter-status').value = 'All';
+            document.getElementById('task-filter-priority').value = 'All';
+            document.getElementById('task-filter-category').value = 'All';
+            document.getElementById('task-filter-project').value = 'All';
+            document.getElementById('task-sort-by').value = 'deadline';
+            document.getElementById('sort-order-icon').textContent = '↑';
+            this.loadTasks();
+        }
+
+        filterByPriority(p) {
+            this.filter.priority = p;
+            document.getElementById('task-filter-priority').value = p;
+            this.navigate('tasks');
+            this.loadTasks();
+        }
+
+        populateCategories() {
+            const sel = document.getElementById('task-filter-category');
+            if (!sel) return;
+            const cur = sel.value;
+            const set = new Set(['Study', 'Work', 'Personal', 'Health', 'Urgent']);
+            for (const t of this.tasks) {
+                if (t.category) set.add(t.category);
+            }
+            let h = '<option value="All">All Categories</option>';
+            for (const c of Array.from(set).sort()) {
+                h += `<option value="${this.esc(c)}">${this.esc(c)}</option>`;
+            }
+            sel.innerHTML = h;
+            if (set.has(cur) || cur === 'All') sel.value = cur;
+        }
+
+        populateProjectSelects() {
+            const fSel = document.getElementById('task-filter-project');
+            const mSel = document.getElementById('task-project');
+
+            let fh = '<option value="All">All Projects</option>';
+            let mh = '<option value="">None (Independent)</option>';
+
+            for (const p of this.projects) {
+                fh += `<option value="${p.id}">${this.esc(p.title)}</option>`;
+                mh += `<option value="${p.id}">${this.esc(p.title)}</option>`;
+            }
+
+            if (fSel) fSel.innerHTML = fh;
+            if (mSel) mSel.innerHTML = mh;
+        }
+
+        async toggleComplete(id) {
+            try {
+                await this.req(`/tasks/${id}/complete`, { method: 'PATCH' });
+                this.toast('Task status updated', 'info');
+                await this.refresh();
+            } catch (e) {}
+        }
+
+        async quickStatus(id, st) {
+            try {
+                await this.req(`/tasks/${id}/status`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status: st })
+                });
+                this.toast(`Task marked as ${st}`, 'info');
+                await this.refresh();
+            } catch (e) {}
+        }
+
+        // ---------------------------------------------------------------------
+        // Render Projects
+        // ---------------------------------------------------------------------
+        renderProjects() {
+            const g = document.getElementById('projects-grid');
+            if (!g) return;
+
+            if (this.projects.length === 0) {
+                g.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">No projects created yet. Create a project to group personal milestones.</div>';
+                return;
+            }
+
+            g.innerHTML = this.projects.map(p => {
+                const prog = p.progressPercentage || 0;
+                const col = p.colorHex || '#245C4A';
+
+                return `
+                    <div class="project-card">
+                        <div class="project-card-header">
+                            <div>
+                                <span class="badge badge-sage" style="margin-bottom: 4px;">${this.esc(p.category)}</span>
+                                <h3 class="project-title" style="color: ${col};">${this.esc(p.title)}</h3>
+                            </div>
+                            <div class="action-btn-group">
+                                <button class="btn-row-action" onclick="app.openProjectForEdit('${p.id}')" title="Edit">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                </button>
+                                <button class="btn-row-action danger" onclick="app.confirmDeleteProject('${p.id}', '${this.esc(p.title)}')" title="Delete">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.4;">${this.esc(p.description) || 'No description.'}</p>
+
+                        <div class="project-progress-wrap">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; font-family: var(--font-mono);">
+                                <span>Progress</span>
+                                <strong>${prog}% (${p.completedTasks || 0}/${p.totalTasks || 0})</strong>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: ${prog}%; background-color: ${col};"></div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-secondary); border-top: 1px solid var(--border-subtle); padding-top: 8px;">
+                            <span>Due: ${p.deadline || 'No target'}</span>
+                            <button class="btn btn-secondary btn-sm" onclick="app.viewProjectTasks('${p.id}')">View Tasks</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        viewProjectTasks(pid) {
+            this.filter.projectId = pid;
+            document.getElementById('task-filter-project').value = pid;
+            this.navigate('tasks');
+            this.loadTasks();
+        }
+
+        // ---------------------------------------------------------------------
+        // Render Planner & Workload
+        // ---------------------------------------------------------------------
+        renderWorkload() {
+            const chart = document.getElementById('workload-chart');
+            const hero = document.getElementById('planner-detailed-hero');
+            if (!chart || !this.workload) return;
+
+            const b = this.workload.dailyBreakdown || [];
+            if (b.length === 0) {
+                chart.innerHTML = '<div class="empty-state" style="width: 100%;">No scheduled tasks in the upcoming 14 days.</div>';
+            } else {
+                const maxCap = this.settings.dailyCapacityHours;
+                chart.innerHTML = b.slice(0, 14).map(d => {
+                    const pct = Math.min((d.hours / (maxCap * 1.5)) * 100, 100);
+                    return `
+                        <div class="workload-day-col" title="${d.date}: ${d.hours}h (${d.taskCount} tasks)">
+                            <span style="font-size: 11px; font-family: var(--font-mono); font-weight: 600;">${d.hours}h</span>
+                            <div class="day-bar-wrap">
+                                <div class="day-bar ${d.isOverloaded ? 'overloaded' : ''}" style="height: ${Math.max(pct, 8)}%;"></div>
+                            </div>
+                            <span style="font-size: 10.5px; color: var(--text-secondary); font-family: var(--font-mono);">${d.date.substr(5)}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            if (hero && this.dashboard && this.dashboard.recommendation) {
+                const rec = this.dashboard.recommendation;
+                if (rec.hasRecommendation) {
+                    const t = rec.task;
+                    const f = rec.factors || {};
+                    hero.innerHTML = `
+                        <div style="background-color: var(--bg-surface-muted); padding: 14px; border-radius: var(--radius-md); margin-top: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <h3 style="font-size: 16px; font-weight: 700;">${this.esc(t.title)}</h3>
+                                <span class="badge badge-sage">Score: ${rec.score} pts</span>
+                            </div>
+                            <p style="font-size: 13px; margin-bottom: 10px;">${this.esc(rec.rationale)}</p>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <span class="badge badge-sage">Priority Weight: ${f.priorityWeight || 0} pts</span>
+                                <span class="badge badge-sage">Deadline Urgency: ${f.deadlineUrgency || 0} pts</span>
+                                <span class="badge badge-sage">Status Momentum: ${f.statusMomentum || 0} pts</span>
+                                <span class="badge badge-sage">Effort Optimization: ${f.effortOptimization || 0} pts</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    hero.innerHTML = '<div class="empty-state">No pending tasks to prioritize.</div>';
+                }
+            }
+        }
+
+        renderReschedule() {
+            const list = document.getElementById('reschedule-list');
+            const badge = document.getElementById('reschedule-badge');
+            if (!list) return;
+
+            if (!this.rescheduleSuggestions || this.rescheduleSuggestions.length === 0) {
+                list.innerHTML = '<div class="empty-state">No overdue tasks requiring rescheduling. You are on track!</div>';
+                if (badge) badge.textContent = '0 Suggestions';
+                return;
+            }
+
+            if (badge) badge.textContent = `${this.rescheduleSuggestions.length} Suggestions`;
+
+            list.innerHTML = this.rescheduleSuggestions.map(s => `
+                <div class="reschedule-item">
+                    <div>
+                        <strong style="font-size: 13.5px;">${this.esc(s.taskTitle)}</strong>
+                        <div style="font-size: 12px; color: var(--priority-critical);">
+                            Original: ${s.currentDeadline} ➔ Suggested: <strong>${s.suggestedDeadline}</strong>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">${this.esc(s.reason)}</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="app.acceptReschedule('${s.taskId}', '${s.suggestedDeadline}')">
+                        Accept
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        async acceptReschedule(taskId, newDeadline) {
+            try {
+                await this.req(`/reschedule-suggestions/${taskId}/accept`, {
+                    method: 'POST',
+                    body: JSON.stringify({ suggestedDeadline: newDeadline })
+                });
+                this.toast('Deadline updated successfully', 'info');
+                await this.refresh();
+            } catch (e) {}
+        }
+
+        async saveCapacity() {
+            const inp = document.getElementById('planner-capacity-input');
+            const v = parseFloat(inp.value);
+            if (isNaN(v) || v < 0.5 || v > 24) {
+                this.toast('Please enter hours between 0.5 and 24', 'error');
+                return;
+            }
+            try {
+                await this.req('/settings', {
+                    method: 'PUT',
+                    body: JSON.stringify({ dailyCapacityHours: v })
+                });
+                this.settings.dailyCapacityHours = v;
+                this.toast(`Daily capacity updated to ${v}h`, 'info');
+                await this.refresh();
+            } catch (e) {}
+        }
+
+        async saveCapacityFromModal() {
+            const inp = document.getElementById('settings-modal-cap');
+            const v = parseFloat(inp.value);
+            if (isNaN(v) || v < 0.5 || v > 24) {
+                this.toast('Please enter hours between 0.5 and 24', 'error');
+                return;
+            }
+            try {
+                await this.req('/settings', {
+                    method: 'PUT',
+                    body: JSON.stringify({ dailyCapacityHours: v })
+                });
+                this.settings.dailyCapacityHours = v;
+                this.closeSettingsModal();
+                this.toast(`Capacity saved: ${v}h`, 'info');
+                await this.refresh();
+            } catch (e) {}
+        }
+
+        // ---------------------------------------------------------------------
+        // Render Calendar
+        // ---------------------------------------------------------------------
+        calPrev() { this.calDate.setMonth(this.calDate.getMonth() - 1); this.renderCalendar(); }
+        calNext() { this.calDate.setMonth(this.calDate.getMonth() + 1); this.renderCalendar(); }
+        calToday() { this.calDate = new Date(); this.renderCalendar(); }
+
+        renderCalendar() {
+            const mat = document.getElementById('cal-matrix');
+            const lbl = document.getElementById('cal-month-title');
+            if (!mat) return;
+
+            const y = this.calDate.getFullYear();
+            const m = this.calDate.getMonth();
+            const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            lbl.textContent = `${names[m]} ${y}`;
+
+            const firstDay = new Date(y, m, 1).getDay();
+            const daysInMonth = new Date(y, m + 1, 0).getDate();
+            const prevMonthDays = new Date(y, m, 0).getDate();
+
+            const byDate = {};
+            for (const t of this.tasks) {
+                if (t.deadline) {
+                    const dk = t.deadline.substr(0, 10);
+                    if (!byDate[dk]) byDate[dk] = [];
+                    byDate[dk].push(t);
+                }
+            }
+
+            const today = this.fmtDate(new Date());
+            let h = '';
+
+            for (let i = 0; i < 42; i++) {
+                let cy = y, cm = m, cd = 0, isCur = true;
+                if (i < firstDay) {
+                    cd = prevMonthDays - (firstDay - 1 - i);
+                    cm = m - 1;
+                    if (cm < 0) { cm = 11; cy--; }
+                    isCur = false;
+                } else if (i >= firstDay + daysInMonth) {
+                    cd = i - (firstDay + daysInMonth) + 1;
+                    cm = m + 1;
+                    if (cm > 11) { cm = 0; cy++; }
+                    isCur = false;
+                } else {
+                    cd = i - firstDay + 1;
+                }
+
+                const dStr = this.fmtDate(new Date(cy, cm, cd));
+                const dTasks = byDate[dStr] || [];
+                const isSel = (dStr === this.calSelected);
+                const isTd = (dStr === today);
+
+                h += `
+                    <div class="cal-day-cell ${!isCur ? 'other-month' : ''} ${isTd ? 'today' : ''} ${isSel ? 'selected' : ''}" onclick="app.selectDate('${dStr}')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="cal-day-num">${cd}</span>
+                            ${dTasks.length ? `<span class="badge ${dTasks.some(t => t.isOverdue) ? 'badge-danger' : 'badge-sage'}" style="font-size: 9px; padding: 1px 4px;">${dTasks.length}</span>` : ''}
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 2px; margin-top: auto;">
+                            ${dTasks.slice(0, 3).map(t => `<span style="width: 5px; height: 5px; border-radius: 50%; background-color: ${t.isOverdue ? 'var(--priority-critical)' : 'var(--primary)'};"></span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            mat.innerHTML = h;
+            this.renderSelectedDateTasks();
+        }
+
+        selectDate(dStr) {
+            this.calSelected = dStr;
+            this.renderCalendar();
+        }
+
+        renderSelectedDateTasks() {
+            const list = document.getElementById('cal-selected-tasks');
+            const lbl = document.getElementById('cal-selected-label');
+            if (!list) return;
+
+            lbl.textContent = `Schedule: ${this.calSelected}`;
+            const matched = this.tasks.filter(t => t.deadline && t.deadline.substr(0, 10) === this.calSelected);
+
+            if (matched.length === 0) {
+                list.innerHTML = `<div class="empty-state">No tasks scheduled for ${this.calSelected}.</div>`;
+                return;
+            }
+
+            list.innerHTML = matched.map(t => `
+                <div class="mini-item" onclick="app.openTaskForEdit('${t.id}')">
+                    <div>
+                        <div class="mini-item-title">${this.esc(t.title)}</div>
+                        <div class="mini-item-meta">${t.status} • ⏱ ${t.estimatedHours}h</div>
+                    </div>
+                    <span class="badge badge-${t.priority.toLowerCase()}">${t.priority}</span>
+                </div>
+            `).join('');
+        }
+
+        openTaskForSelectedDate() {
+            this.presetDate = this.calSelected;
+            this.openTaskModal();
+        }
+
+        // ---------------------------------------------------------------------
+        // Render Reports
+        // ---------------------------------------------------------------------
+        renderReports() {
+            const sb = document.getElementById('report-status-bars');
+            const pb = document.getElementById('report-priority-bars');
+            const prjb = document.getElementById('report-projects-bars');
+            if (!sb || !pb) return;
+
+            const tot = this.tasks.length;
+            if (tot === 0) {
+                sb.innerHTML = '<div class="empty-state">No task data available for reports.</div>';
+                pb.innerHTML = '<div class="empty-state">No task data available for reports.</div>';
+                if (prjb) prjb.innerHTML = '<div class="empty-state">No project data available.</div>';
+                return;
+            }
+
+            const sc = { Pending: 0, 'In Progress': 0, Completed: 0 };
+            const pc = { Critical: 0, High: 0, Medium: 0, Low: 0 };
+
+            for (const t of this.tasks) {
+                if (sc[t.status] !== undefined) sc[t.status]++;
+                if (pc[t.priority] !== undefined) pc[t.priority]++;
+            }
+
+            sb.innerHTML = Object.entries(sc).map(([st, c]) => {
+                const pct = Math.round((c / tot) * 100);
+                let col = 'var(--status-pending)';
+                if (st === 'In Progress') col = 'var(--status-inprogress)';
+                if (st === 'Completed') col = 'var(--status-completed)';
+
+                return `
+                    <div class="report-bar-row">
+                        <div class="report-bar-info">
+                            <span>${st}</span>
+                            <strong>${c} tasks (${pct}%)</strong>
+                        </div>
+                        <div class="report-bar-track">
+                            <div class="report-bar-fill" style="width: ${pct}%; background-color: ${col};"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            pb.innerHTML = Object.entries(pc).map(([pr, c]) => {
+                const pct = Math.round((c / tot) * 100);
+                let col = 'var(--priority-medium)';
+                if (pr === 'Critical') col = 'var(--priority-critical)';
+                if (pr === 'High') col = 'var(--priority-high)';
+                if (pr === 'Low') col = 'var(--priority-low)';
+
+                return `
+                    <div class="report-bar-row">
+                        <div class="report-bar-info">
+                            <span>${pr} Priority</span>
+                            <strong>${c} tasks (${pct}%)</strong>
+                        </div>
+                        <div class="report-bar-track">
+                            <div class="report-bar-fill" style="width: ${pct}%; background-color: ${col};"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (prjb) {
+                if (this.projects.length === 0) {
+                    prjb.innerHTML = '<div class="empty-state">No projects created.</div>';
+                } else {
+                    prjb.innerHTML = this.projects.map(p => {
+                        const prog = p.progressPercentage || 0;
+                        return `
+                            <div class="report-bar-row">
+                                <div class="report-bar-info">
+                                    <span><strong>${this.esc(p.title)}</strong> (${p.completedTasks || 0}/${p.totalTasks || 0} tasks)</span>
+                                    <strong>${prog}%</strong>
+                                </div>
+                                <div class="report-bar-track">
+                                    <div class="report-bar-fill" style="width: ${prog}%; background-color: ${p.colorHex || '#245C4A'};"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // Render History
+        // ---------------------------------------------------------------------
+        renderHistory() {
+            const list = document.getElementById('activity-timeline-list');
+            if (!list) return;
+
+            if (this.activities.length === 0) {
+                list.innerHTML = '<div class="empty-state">No activity events logged yet.</div>';
+                return;
+            }
+
+            list.innerHTML = this.activities.map(a => `
+                <div class="history-item">
+                    <div class="history-dot"></div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono);">
+                            <span>[${a.eventType}] ${a.entityType}</span>
+                            <span>${this.fmtTime(a.timestamp)}</span>
+                        </div>
+                        <div style="font-size: 13px; margin-top: 2px;">${this.esc(a.message)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        fmtTime(iso) {
+            if (!iso) return '';
+            try {
+                return new Date(iso).toLocaleString('en-US', {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+            } catch { return iso; }
+        }
+
+        // ---------------------------------------------------------------------
+        // Task Modals & CRUD
+        // ---------------------------------------------------------------------
+        openTaskModal() {
+            document.getElementById('task-id').value = '';
+            document.getElementById('modal-task-title').textContent = 'Create Task';
+            document.getElementById('form-task').reset();
+            document.getElementById('task-priority').value = 'Medium';
+            document.getElementById('task-status').value = 'Pending';
+            document.getElementById('task-hours').value = '1.0';
+            document.getElementById('task-category').value = 'Study';
+
+            if (this.presetDate) {
+                document.getElementById('task-deadline').value = this.presetDate;
+                this.presetDate = null;
+            }
+
+            this.populateProjectSelects();
+            document.getElementById('modal-task').classList.add('active');
+            document.getElementById('task-title').focus();
+        }
+
+        openTaskForEdit(id) {
+            const t = this.tasks.find(x => x.id === id);
+            if (!t) return;
+
+            document.getElementById('task-id').value = t.id;
+            document.getElementById('modal-task-title').textContent = 'Edit Task';
+            document.getElementById('task-title').value = t.title;
+            document.getElementById('task-desc').value = t.description || '';
+            document.getElementById('task-notes').value = t.notes || '';
+            document.getElementById('task-priority').value = t.priority;
+            document.getElementById('task-status').value = t.status;
+            document.getElementById('task-deadline').value = t.deadline ? t.deadline.substr(0, 10) : '';
+            document.getElementById('task-hours').value = t.estimatedHours || 1.0;
+            document.getElementById('task-category').value = t.category || 'Study';
+            document.getElementById('task-tags').value = (t.tags || []).join(', ');
+
+            this.populateProjectSelects();
+            document.getElementById('task-project').value = t.projectId || '';
+
+            document.getElementById('modal-task').classList.add('active');
+            document.getElementById('task-title').focus();
+        }
+
+        closeTaskModal() {
+            document.getElementById('modal-task').classList.remove('active');
+        }
+
+        async handleTaskSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('task-id').value;
+            const title = document.getElementById('task-title').value.trim();
+            const description = document.getElementById('task-desc').value.trim();
+            const notes = document.getElementById('task-notes').value.trim();
+            const priority = document.getElementById('task-priority').value;
+            const status = document.getElementById('task-status').value;
+            const deadline = document.getElementById('task-deadline').value;
+            const estimatedHours = parseFloat(document.getElementById('task-hours').value) || 1.0;
+            const category = document.getElementById('task-category').value.trim() || 'General';
+            const projectId = document.getElementById('task-project').value;
+            const rawTags = document.getElementById('task-tags').value;
+            const tags = rawTags.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+            if (!title) {
+                this.toast('Task title is required.', 'error');
+                return;
+            }
+
+            const payload = {
+                title, description, notes, priority, status, deadline, estimatedHours, category, tags, projectId
+            };
+
+            try {
+                if (id) {
+                    await this.req(`/tasks/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+                    this.toast('Task updated successfully', 'info');
+                } else {
+                    await this.req('/tasks', { method: 'POST', body: JSON.stringify(payload) });
+                    this.toast('Task created successfully', 'info');
+                }
+                this.closeTaskModal();
+                await this.refresh();
+            } catch (err) {}
+        }
+
+        confirmDeleteTask(id, title) {
+            this.confirm('Delete Task', `Are you sure you want to delete "${title}"?`, async () => {
+                try {
+                    await this.req(`/tasks/${id}`, { method: 'DELETE' });
+                    this.toast('Task deleted', 'info');
+                    await this.refresh();
+                } catch (e) {}
+            });
+        }
+
+        // ---------------------------------------------------------------------
+        // Project Modals & CRUD
+        // ---------------------------------------------------------------------
+        openProjectModal() {
+            document.getElementById('project-id').value = '';
+            document.getElementById('modal-project-title').textContent = 'Create Project';
+            document.getElementById('form-project').reset();
+            document.getElementById('project-category').value = 'Academic';
+            document.getElementById('project-color').value = '#245C4A';
+            document.getElementById('modal-project').classList.add('active');
+            document.getElementById('project-title').focus();
+        }
+
+        openProjectForEdit(pid) {
+            const p = this.projects.find(x => x.id === pid);
+            if (!p) return;
+
+            document.getElementById('project-id').value = p.id;
+            document.getElementById('modal-project-title').textContent = 'Edit Project';
+            document.getElementById('project-title').value = p.title;
+            document.getElementById('project-category').value = p.category || 'Academic';
+            document.getElementById('project-deadline').value = p.deadline ? p.deadline.substr(0, 10) : '';
+            document.getElementById('project-color').value = p.colorHex || '#245C4A';
+            document.getElementById('project-desc').value = p.description || '';
+
+            document.getElementById('modal-project').classList.add('active');
+            document.getElementById('project-title').focus();
+        }
+
+        closeProjectModal() {
+            document.getElementById('modal-project').classList.remove('active');
+        }
+
+        async handleProjectSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('project-id').value;
+            const title = document.getElementById('project-title').value.trim();
+            const category = document.getElementById('project-category').value.trim() || 'General';
+            const deadline = document.getElementById('project-deadline').value;
+            const colorHex = document.getElementById('project-color').value;
+            const description = document.getElementById('project-desc').value.trim();
+
+            if (!title) {
+                this.toast('Project title is required.', 'error');
+                return;
+            }
+
+            const payload = { title, category, deadline, colorHex, description };
+
+            try {
+                if (id) {
+                    await this.req(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+                    this.toast('Project updated', 'info');
+                } else {
+                    await this.req('/projects', { method: 'POST', body: JSON.stringify(payload) });
+                    this.toast('Project created', 'info');
+                }
+                this.closeProjectModal();
+                await this.refresh();
+            } catch (e) {}
+        }
+
+        confirmDeleteProject(pid, title) {
+            this.confirm('Delete Project', `Delete project "${title}"? Any associated tasks will become independent.`, async () => {
+                try {
+                    await this.req(`/projects/${pid}`, { method: 'DELETE' });
+                    this.toast('Project deleted. Associated tasks preserved.', 'info');
+                    await this.refresh();
+                } catch (e) {}
+            });
+        }
+
+        // ---------------------------------------------------------------------
+        // Settings & Confirm Dialogs
+        // ---------------------------------------------------------------------
+        openSettingsModal() {
+            document.getElementById('settings-modal-cap').value = this.settings.dailyCapacityHours;
+            document.getElementById('modal-settings').classList.add('active');
+        }
+
+        closeSettingsModal() {
+            document.getElementById('modal-settings').classList.remove('active');
+        }
+
+        confirm(title, msg, onOk) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = msg;
+            this.confirmCallback = onOk;
+            document.getElementById('btn-confirm-ok').onclick = () => {
+                if (this.confirmCallback) this.confirmCallback();
+                this.closeConfirmModal();
+            };
+            document.getElementById('modal-confirm').classList.add('active');
+        }
+
+        closeConfirmModal() {
+            document.getElementById('modal-confirm').classList.remove('active');
+            this.confirmCallback = null;
+        }
+
+        toast(msg, type = 'info') {
+            const c = document.getElementById('toast-container');
+            if (!c) return;
+            const t = document.createElement('div');
+            t.className = 'toast';
+            if (type === 'error') t.style.backgroundColor = 'var(--priority-critical)';
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3200);
+        }
+    }
+
+    const app = new TaskFlowApp();
+    window.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>

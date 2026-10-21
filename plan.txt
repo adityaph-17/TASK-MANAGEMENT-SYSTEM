@@ -1,0 +1,285 @@
+================================================================================
+TASKFLOW - SMART PERSONAL TASK MANAGEMENT SYSTEM
+DEVELOPMENT PLAN & ARCHITECTURAL SPECIFICATION
+================================================================================
+
+1. PROJECT PURPOSE AND PROBLEM STATEMENT
+--------------------------------------------------------------------------------
+Personal productivity is frequently undermined by fragmentation: tasks are listed
+without context, deadlines pile up without workload visibility, and overdue tasks
+lead to cognitive overload. Most modern productivity tools are built for complex
+enterprise teams or cloud subscriptions, introducing unnecessary friction for
+individuals.
+
+TaskFlow is a self-contained, desktop-grade personal task management system designed
+as a C++17 Object-Oriented Programming (OOP) mini-project with a clean, calm web
+frontend. It provides an individual user with an intuitive workflow to:
+- Capture and categorize daily tasks and personal projects.
+- Make informed prioritization decisions using a transparent, rule-based planner.
+- Monitor daily workload against a realistic personal working capacity.
+- Receive sensible, non-destructive rescheduling proposals for overdue tasks.
+- Track audit history and productivity velocity without third-party services.
+
+
+2. SCOPE AND OBJECTIVES
+--------------------------------------------------------------------------------
+Target Scope: Individual Personal Use.
+- Single-user desktop architecture without multi-user authentication, accounts,
+  or cloud synchronization overhead.
+- Safe, modular code design with clear abstraction barriers so multi-user accounts
+  and team collaboration can be added in future iterations if desired.
+
+Key Objectives:
+- Code clarity: Written in modern C++17 with readable, well-commented modules
+  that a second-year computer engineering student can understand and defend in a viva.
+- Genuine OOP implementation: Concrete application of encapsulation, inheritance,
+  runtime polymorphism, composition, operator overloading, templates, and exception handling.
+- Aesthetic harmony: A peaceful, warm productivity aesthetic using sage greens,
+  deep forest accents, off-white canvases, crisp typography, and uncluttered layouts.
+- Zero simulated data: Starts with a clean, empty state; all stats and reports
+  derive strictly from actual saved user data in local JSON storage.
+
+
+3. PLANNED FEATURES AND BEHAVIOR
+--------------------------------------------------------------------------------
+A. Executive Dashboard:
+   - Live metrics: Total, Pending, In-Progress, Completed, Overdue, and Due-Today tasks.
+   - Dynamic completion rate percentage and progress ring.
+   - Smart Next Recommended Task spotlight card.
+   - High-priority tasks and approaching deadlines watchlist.
+   - Recent activity timeline feed.
+
+B. Task Management:
+   - Full CRUD: Create, Edit, Complete, and Delete tasks.
+   - Attributes: Title, Description, Extended Notes, Priority (Low, Medium, High, Critical),
+     Status (Pending, In Progress, Completed), Creation Date, Start Date, Deadline,
+     Estimated Hours (0.1 to 100 hrs), Category (Study, Work, Personal, Health, Urgent),
+     Tags, and Project association.
+   - Real-time search by title or description.
+   - Multi-field filtering (status, priority, category, project).
+   - Multi-field sorting (deadline, priority weight, creation date, title).
+   - Validation on both backend and frontend (reject empty titles, invalid enums).
+   - Deletion safety with confirmation dialog.
+
+C. Personal Project Management:
+   - Create, edit, and delete personal projects (title, category, deadline, description, color).
+   - Assign tasks to projects.
+   - Real-time progress computation (% completed tasks, hours completed vs total).
+   - Safe deletion policy: Deleting a project retains associated tasks by resetting their
+     projectId to independent status (preventing accidental task loss).
+
+D. Smart Priority Planner (Rule-Based C++ Engine):
+   - Deterministic local scoring formula in C++ without external cloud APIs:
+     * Overdue status penalty/boost (+150 pts + 15 pts/day overdue).
+     * Approaching deadline urgency (due today: +100 pts; <=2 days: +70 pts; <=7 days: +40 pts).
+     * Priority weight (Critical: 90 pts; High: 60 pts; Medium: 30 pts; Low: 10 pts).
+     * Status momentum (+25 pts if already in progress).
+     * Effort quick-win bonus (+20 pts for tasks <= 1.0 hr).
+   - Identifies the top recommended task and provides a clear, natural explanation.
+
+E. Workload Analysis:
+   - User-configurable daily work capacity (default: 6.0 hours/day).
+   - Aggregates pending hours per calendar date.
+   - Generates capacity warning alerts when scheduled hours exceed daily capacity.
+   - Visualizes scheduled workload horizon.
+
+F. Smart Rescheduling:
+   - Identifies overdue tasks.
+   - Simulates upcoming calendar dates to locate the earliest available day with
+     sufficient remaining capacity.
+   - Presents non-destructive suggestions with clear rationale.
+   - Strictly requires explicit user acceptance; never alters deadlines automatically.
+
+G. Calendar View:
+   - Interactive monthly calendar matrix.
+   - Visual indicators on days with scheduled tasks, highlighted if overdue.
+   - Clicking a day filters and displays tasks scheduled for that specific date.
+   - Shortcut to add tasks pre-assigned to the selected date.
+
+H. Task History & Audit Log:
+   - Records task creation, edits, status transitions, deadline adjustments, and completions.
+   - Persisted in JSON and displayed in a chronological timeline view.
+
+I. Reports & Analytics:
+   - Status distribution breakdown, priority distribution, and project execution progress.
+   - Computed exclusively from saved JSON data.
+
+J. In-App Notifications:
+   - Alerts for overdue tasks, deadlines within 24 hours, and capacity overloads.
+
+
+4. FRONTEND AND BACKEND RESPONSIBILITIES
+--------------------------------------------------------------------------------
+Backend (C++17 + Crow):
+- Exposes RESTful JSON endpoints on port 8080.
+- Serves index.html and style.css static assets.
+- Enforces strict input validation and domain constraints.
+- Executes priority scoring, workload analysis, and rescheduling logic.
+- Manages persistent storage with atomic file writes to `data/tasks.json`.
+
+Frontend (HTML5 + style.css + embedded JavaScript in index.html):
+- Single-page application architecture with sidebar navigation.
+- Calm, distraction-free aesthetic with warm off-white and sage green tones.
+- Asynchronous REST communication via fetch().
+- Responsive layouts, accessible modal dialogs, and instant UI feedback.
+
+
+5. FOLDER AND FILE ORGANIZATION
+--------------------------------------------------------------------------------
+TaskFlow/
+│
+├── plan.txt                # Development plan and architectural specification
+├── changes.txt             # Running log of changes and test statuses
+├── README.md               # Final documentation and college viva guide
+│
+├── index.html              # Centralized frontend page with embedded application JS
+├── style.css               # Shared CSS stylesheet (warm sage & forest green theme)
+├── main.cpp                # Server entrypoint and Crow REST API route definitions
+├── Makefile                # Clean build target using clang++ -std=c++17
+│
+├── modules/
+│   ├── Models.hpp          # Entity base class, Task, Project, ActivityEvent, Settings
+│   ├── TaskManager.hpp     # Task CRUD, search, filter, and sorting logic
+│   ├── ProjectManager.hpp  # Project CRUD and progress aggregation
+│   ├── SmartPlanner.hpp    # Rule-based priority recommendation engine
+│   ├── WorkloadAnalyzer.hpp# Workload calculation and daily capacity warnings
+│   ├── Rescheduler.hpp     # Overdue date suggestion engine
+│   ├── ActivityLog.hpp     # Audit history logging and retrieval
+│   └── Storage.hpp         # IStorage interface and JsonStorage implementation
+│
+└── data/
+    └── tasks.json          # Consolidated persistent JSON database (starts empty)
+
+
+6. MAIN C++ CLASSES AND THEIR RESPONSIBILITIES
+--------------------------------------------------------------------------------
+1. `Entity` (modules/Models.hpp):
+   - Base class providing `id`, `createdAt`, `updatedAt`, virtual destructor, and `operator==`.
+2. `Task : public Entity` (modules/Models.hpp):
+   - Represents a task with status, priority, deadline, estimated hours, category, and tags.
+   - Implements `operator<` for priority sorting.
+3. `Project : public Entity` (modules/Models.hpp):
+   - Represents an initiative grouping related tasks.
+4. `ActivityEvent` (modules/Models.hpp):
+   - Audit record capturing entity modifications and timestamps.
+5. `Settings` (modules/Models.hpp):
+   - Stores user preferences such as daily work capacity.
+6. `IStorage` & `JsonStorage` (modules/Storage.hpp):
+   - Abstract interface and concrete JSON implementation using atomic writes to `data/tasks.json`.
+7. `TaskManager` (modules/TaskManager.hpp):
+   - Encapsulates task collection, validations, queries, and mutations.
+8. `ProjectManager` (modules/ProjectManager.hpp):
+   - Encapsulates project collection, progress metrics, and task associations.
+9. `SmartPlanner` (modules/SmartPlanner.hpp):
+   - Calculates task priority scores and provides natural-language recommendations.
+10. `WorkloadAnalyzer` (modules/WorkloadAnalyzer.hpp):
+    - Analyzes pending hours vs. daily capacity; detects bottlenecks.
+11. `Rescheduler` (modules/Rescheduler.hpp):
+    - Proposes balanced deadline adjustments for overdue tasks.
+12. `ActivityLog` (modules/ActivityLog.hpp):
+    - Collects and queries chronological audit events.
+
+
+7. OOP CONCEPTS AND WHERE THEY WILL BE USED
+--------------------------------------------------------------------------------
+- Classes & Objects: Domain modeled with discrete objects (`Task`, `Project`, etc.).
+- Encapsulation: Private member data with public getters/setters and invariant validation.
+- Abstraction: Abstract `IStorage` interface separating file persistence from domain logic.
+- Inheritance: `Task` and `Project` inherit from `Entity`; `JsonStorage` inherits `IStorage`.
+- Runtime Polymorphism: Virtual methods and virtual destructors in `IStorage` and `Entity`.
+- Constructors & Destructors: RAII resource safety, default and parameterized constructors.
+- Function Overloading: Multiple constructors and query methods (`getTasks()` vs `getTasks(filter)`).
+- Function Overriding: Derived classes explicitly override base methods using `override`.
+- Composition & Aggregation: Controllers compose storage and aggregate entities.
+- Static Members: Static date helpers, validation functions, and factory methods.
+- Operator Overloading: `Task::operator<` for urgency comparison; `Entity::operator==` for equality.
+- Exception Handling: Domain exceptions (`ValidationException`, `NotFoundException`, `StorageException`).
+- Templates: Generic boundary validator `template<typename T> bool inRange(T, T, T)`.
+- STL Containers: `std::vector`, `std::map`, `std::unordered_map`, `std::set`.
+- Smart Pointers: `std::unique_ptr` managing lifetime of storage and engine instances.
+- File Handling & Persistence: Atomic file writing via temporary files and `nlohmann::json`.
+
+
+8. API COMMUNICATION (REST ENDPOINTS)
+--------------------------------------------------------------------------------
+Tasks:
+- GET    /api/tasks
+- GET    /api/tasks/<id>
+- POST   /api/tasks
+- PUT    /api/tasks/<id>
+- DELETE /api/tasks/<id>
+- PATCH  /api/tasks/<id>/complete
+
+Projects:
+- GET    /api/projects
+- POST   /api/projects
+- PUT    /api/projects/<id>
+- DELETE /api/projects/<id>
+
+Dashboard, Planning & Workload:
+- GET    /api/dashboard
+- GET    /api/planner
+- GET    /api/workload
+- GET    /api/calendar
+- GET    /api/reports
+- GET    /api/activity
+- GET    /api/notifications
+
+Rescheduling & Settings:
+- GET    /api/reschedule-suggestions
+- POST   /api/reschedule-suggestions/<id>/accept
+- GET    /api/settings
+- PUT    /api/settings
+
+
+9. DATA STORAGE AND PERSISTENCE
+--------------------------------------------------------------------------------
+- Path: `data/tasks.json`
+- Stores a unified JSON object:
+  {
+    "tasks": [...],
+    "projects": [...],
+    "activities": [...],
+    "settings": { "dailyCapacityHours": 6.0 }
+  }
+- Starts completely empty (`[]` for collections).
+- Preserves all updates immediately upon mutation.
+- Atomic write: Writes to `data/tasks.json.tmp` then renames to avoid corruption.
+
+
+10. DEPENDENCIES AND PURPOSE
+--------------------------------------------------------------------------------
+- C++ Compiler: Apple Clang 21.0.0 (-std=c++17).
+- Crow (1.3.4): Modern C++ web microframework.
+- Asio (1.38.2): Asynchronous networking backing Crow.
+- nlohmann-json (3.12.0): Header-only JSON serialization.
+- All located in `/opt/homebrew/include` without adding external runtime daemons.
+
+
+11. DEVELOPMENT PHASES
+--------------------------------------------------------------------------------
+Phase 1: Workspace verification, target folder structure, plan.txt, and changes.txt.
+Phase 2: Core C++ modules in `modules/` and `data/tasks.json` storage.
+Phase 3: Crow REST server in `main.cpp` and Makefile.
+Phase 4: Frontend in `index.html` (with embedded JS) and `style.css` (warm sage theme).
+Phase 5: Verification testing of all endpoints, CRUD operations, planner, and persistence.
+Phase 6: Final documentation in `README.md` with viva guide and class diagram.
+
+
+12. TESTING STRATEGY
+--------------------------------------------------------------------------------
+- Core operations: Task and project CRUD, status toggling, and project assignment.
+- Search and filters: Querying across title, description, category, and priority.
+- Rule-based planner: Verification of scoring weights and recommendations.
+- Workload warnings: Checking capacity threshold triggers.
+- Rescheduling: Safe proposal generation and approval workflow.
+- Edge cases: Malformed payloads, invalid IDs, empty titles, and server restart persistence.
+
+
+13. KNOWN LIMITATIONS AND DESIGN DECISIONS
+--------------------------------------------------------------------------------
+- Individual Scope: Built specifically for single-user productivity; user auth is omitted
+  to keep the OOP mini-project straightforward and focused.
+- Deterministic Planner: Rule-based heuristics are deliberately chosen over cloud LLMs
+  for 100% offline reliability, zero operational cost, and explainability.
+================================================================================

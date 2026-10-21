@@ -1,0 +1,67 @@
+# ==============================================================================
+# TaskFlow - Git Ignore Configuration
+# ==============================================================================
+
+# Compiled Binaries & Executables
+taskflow
+taskflow.exe
+*.out
+*.app
+bin/
+build/
+dist/
+
+# Object & Intermediate Files
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+*.d
+
+# Debugging Symbols & Dumps
+*.dSYM/
+*.pdb
+*.idb
+*.dump
+
+# Temporary, Backup & Swap Files
+*.tmp
+*.bak
+*~
+*.swp
+*.swo
+data/*.tmp
+data/tasks.json.tmp
+
+# macOS System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows System Files
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+
+# Clangd & Tooling Caches
+.cache/
+.clangd/
+
+# IDE & Editor User Data (Preserve team configs, ignore user caches)
+.idea/
+.vscode/*.log
+.vscode/.browse.*
+
+# Logs
+*.log
+
+.cache
+.vscode
+.clangd
+compile_commands.json
+changes.txt

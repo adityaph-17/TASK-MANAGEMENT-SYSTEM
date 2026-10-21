@@ -1,0 +1,155 @@
+{
+  "activities": [
+    {
+      "entityId": "tsk_1792591110_341022",
+      "entityType": "Task",
+      "eventType": "TASK_CREATED",
+      "id": "act_1792591110_1",
+      "message": "Created task: cpp project",
+      "timestamp": "2026-10-21T19:28:30"
+    },
+    {
+      "entityId": "prj_1792591127_968022",
+      "entityType": "Project",
+      "eventType": "PROJECT_CREATED",
+      "id": "act_1792591127_2",
+      "message": "Created project: oop",
+      "timestamp": "2026-10-21T19:28:47"
+    },
+    {
+      "entityId": "tsk_1792591110_341022",
+      "entityType": "Task",
+      "eventType": "TASK_COMPLETED",
+      "id": "act_1792591178_3",
+      "message": "Task 'cpp project' set to Completed",
+      "timestamp": "2026-10-21T19:29:38"
+    },
+    {
+      "entityId": "prj_1792591127_968022",
+      "entityType": "Project",
+      "eventType": "PROJECT_DELETED",
+      "id": "act_1792591186_4",
+      "message": "Deleted project: oop",
+      "timestamp": "2026-10-21T19:29:46"
+    },
+    {
+      "entityId": "prj_1792591215_195395",
+      "entityType": "Project",
+      "eventType": "PROJECT_CREATED",
+      "id": "act_1792591215_5",
+      "message": "Created project: oop",
+      "timestamp": "2026-10-21T19:30:15"
+    },
+    {
+      "entityId": "tsk_1792591110_341022",
+      "entityType": "Task",
+      "eventType": "TASK_UPDATED",
+      "id": "act_1792591221_6",
+      "message": "Updated task: cpp project",
+      "timestamp": "2026-10-21T19:30:21"
+    },
+    {
+      "entityId": "tsk_1792592896_191960",
+      "entityType": "Task",
+      "eventType": "TASK_CREATED",
+      "id": "act_1792592896_1",
+      "message": "Created task: srp checking",
+      "timestamp": "2026-10-21T19:58:16"
+    },
+    {
+      "entityId": "tsk_1792592896_191960",
+      "entityType": "Task",
+      "eventType": "TASK_COMPLETED",
+      "id": "act_1792592942_2",
+      "message": "Task 'srp checking' set to Completed",
+      "timestamp": "2026-10-21T19:59:02"
+    },
+    {
+      "entityId": "tsk_1792592896_191960",
+      "entityType": "Task",
+      "eventType": "STATUS_CHANGED",
+      "id": "act_1792592947_3",
+      "message": "Task 'srp checking' set to Pending",
+      "timestamp": "2026-10-21T19:59:07"
+    },
+    {
+      "entityId": "tsk_1792592896_191960",
+      "entityType": "Task",
+      "eventType": "TASK_COMPLETED",
+      "id": "act_1792592947_4",
+      "message": "Task 'srp checking' set to Completed",
+      "timestamp": "2026-10-21T19:59:07"
+    },
+    {
+      "entityId": "tsk_1792592896_191960",
+      "entityType": "Task",
+      "eventType": "STATUS_CHANGED",
+      "id": "act_1792592956_5",
+      "message": "Task 'srp checking' status changed from Completed to In Progress",
+      "timestamp": "2026-10-21T19:59:16"
+    },
+    {
+      "entityId": "settings",
+      "entityType": "System",
+      "eventType": "SETTINGS_UPDATED",
+      "id": "act_1792593009_6",
+      "message": "Daily capacity updated to 3.00h",
+      "timestamp": "2026-10-21T20:00:09"
+    }
+  ],
+  "projects": [
+    {
+      "category": "Academic",
+      "colorHex": "#245C4A",
+      "createdAt": "2026-10-21T19:30:15",
+      "deadline": "",
+      "description": "",
+      "id": "prj_1792591215_195395",
+      "title": "oop",
+      "updatedAt": "2026-10-21T19:30:15"
+    }
+  ],
+  "settings": {
+    "dailyCapacityHours": 3.0
+  },
+  "tasks": [
+    {
+      "category": "Study",
+      "completedAt": "2026-10-21T19:29:38",
+      "createdAt": "2026-10-21T19:28:30",
+      "deadline": "2026-10-22",
+      "description": "",
+      "estimatedHours": 3.1,
+      "id": "tsk_1792591110_341022",
+      "isDueToday": false,
+      "isOverdue": false,
+      "notes": "",
+      "priority": "High",
+      "projectId": "prj_1792591215_195395",
+      "startDate": "",
+      "status": "Completed",
+      "tags": [],
+      "title": "cpp project",
+      "updatedAt": "2026-10-21T19:30:21"
+    },
+    {
+      "category": "Study",
+      "completedAt": "",
+      "createdAt": "2026-10-21T19:58:16",
+      "deadline": "2026-10-22",
+      "description": "",
+      "estimatedHours": 1.1,
+      "id": "tsk_1792592896_191960",
+      "isDueToday": false,
+      "isOverdue": false,
+      "notes": "",
+      "priority": "Critical",
+      "projectId": "",
+      "startDate": "",
+      "status": "In Progress",
+      "tags": [],
+      "title": "srp checking",
+      "updatedAt": "2026-10-21T19:59:16"
+    }
+  ]
+}
