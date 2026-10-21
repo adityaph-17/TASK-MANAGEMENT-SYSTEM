@@ -578,26 +578,7 @@ OOP_PROJECT/
 
 ---
 
-## 12. College Viva & Academic Defense Q&A
-
-### Q1: Why did you choose Crow instead of a heavier backend framework?
-> **Answer**: Crow is a lightweight, modern C++ header-only microframework that delivers fast HTTP performance and clean routing syntax similar to Express or Flask. Because it compiles directly with the C++ application, it requires no external runtime (like Python, Node.js, or Java VM), keeping the system completely self-contained.
-
-### Q2: How does the application prevent file corruption during power loss or abrupt exit?
-> **Answer**: `JsonStorage` implements transactional **atomic writes**. Instead of writing directly into `data/tasks.json`, it writes the complete serialized JSON into a temporary file (`data/tasks.json.tmp`). Once the file stream closes and flushes successfully, it invokes an atomic filesystem rename (`std::filesystem::rename`) to replace the target file.
-
-### Q3: What is the benefit of the `IStorage` interface?
-> **Answer**: `IStorage` is an abstract base class with pure virtual methods enforcing the **Dependency Inversion Principle**. `TaskManager` and `ProjectManager` depend strictly on the `IStorage*` abstraction, not the concrete `JsonStorage` class. If the application later transitions to SQLite, PostgreSQL, or an in-memory cache, only a new derived class needs to be written without touching business logic.
-
-### Q4: How is memory managed across the application?
-> **Answer**: The application follows **RAII (Resource Acquisition Is Initialization)**. Heap allocations use standard smart pointers (`std::unique_ptr<JsonStorage>`), and internal collections use standard STL containers (`std::vector<Task>`). Pointers passed to managers are non-owning references, eliminating memory leaks and dangling pointers.
-
-### Q5: Why is the Smart Priority Planner deterministic rather than using an external LLM?
-> **Answer**: An external cloud LLM introduces internet dependency, network latency, subscription costs, and non-deterministic variations. The C++ rule-based planner scores tasks deterministically using mathematical weights based on deadline proximity, priority levels, status momentum, and effort. It is fast, consistent, private, and works 100% offline.
-
----
-
-## 13. Limitations & Future Roadmap
+## 12. Limitations & Future Roadmap
 
 ### Current Scope & Design Boundaries
 * **Single-User Workspace**: Intentionally optimized for personal solo productivity without multi-tenant authentication overhead.
@@ -610,6 +591,5 @@ OOP_PROJECT/
 
 ---
 
-**Developed for**: Object-Oriented Programming (OOP) Academic Curriculum  
-**Institution**: Marathwada Mitra Mandal's College of Engineering (MMCOE), Pune  
+**Developed for**: Object-Oriented Programming (OOP) Academic Curriculum   
 **Author**: Aditya
