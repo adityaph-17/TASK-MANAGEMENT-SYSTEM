@@ -152,7 +152,8 @@ flowchart TD
     TM --> StorageInterface
     PM --> StorageInterface
     AL --> StorageInterface
-    StorageInterface <|.. JsonStorage
+
+    StorageInterface -.->|implemented by| JsonStorage
     JsonStorage -->|Thread-Safe Atomic Write| DataFile
 ```
 
