@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-lightgrey.svg)](https://apple.com)
 [![License](https://img.shields.io/badge/Project-Academic%20OOP%20Mini--Project-purple.svg)](#)
 
-> **TaskFlow** is an offline-first, high-performance personal productivity system built as an **Object-Oriented Programming (OOP) mini-project** for college curriculum (MMCOE, Pune). It couples a robust **C++17 Crow REST backend** with a calm, responsive, and accessible **HTML5/CSS3/ES6 single-page web interface**.
+> **TaskFlow** is an offline-first, high-performance personal productivity system built as an **Object-Oriented Programming (OOP) mini-project** for college curriculum. It couples a robust **C++17 Crow REST backend** with a calm, responsive, and accessible **HTML5/CSS3/ES6 single-page web interface**.
 
 ---
 
