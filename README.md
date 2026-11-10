@@ -27,8 +27,7 @@
 9. [REST API Reference](#9-rest-api-reference)
 10. [Repository Directory Structure](#10-repository-directory-structure)
 11. [Testing & Quality Verification](#11-testing--quality-verification)
-12. [College Viva & Academic Defense Q&A](#12-college-viva--academic-defense-qa)
-13. [Limitations & Future Roadmap](#13-limitations--future-roadmap)
+12. [Limitations & Future Roadmap](#13-limitations--future-roadmap)
 
 ---
 
