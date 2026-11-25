@@ -2,26 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="description" content="TaskFlow - Smart Personal Task Management System with C++17 OOP Backend, Rule-Based Planner, and Workload Capacity Tracking">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TaskFlow">
+    <meta name="theme-color" content="#12151c">
     <title>TaskFlow – Smart Personal Task Management System</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <div class="app-layout">
+        <div id="sidebar-overlay" class="sidebar-overlay" onclick="app.closeSidebar()"></div>
         
         <!-- Sidebar Navigation -->
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-brand">
-                <div class="brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="brand-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="brand-name">TaskFlow</div>
+                        <div class="brand-tag">Personal Edition • C++17</div>
+                    </div>
+                </div>
+                <button id="btn-sidebar-close" class="btn-sidebar-close" onclick="app.closeSidebar()" aria-label="Close Navigation">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
-                </div>
-                <div>
-                    <div class="brand-name">TaskFlow</div>
-                    <div class="brand-tag">Personal Edition • C++17</div>
-                </div>
+                </button>
             </div>
 
             <nav class="sidebar-menu" aria-label="Main Navigation">
@@ -72,9 +85,18 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="topbar">
-                <div>
-                    <h1 id="page-title" class="page-title">Personal Dashboard</h1>
-                    <p id="page-subtitle" class="page-subtitle">Track your focus, tasks, projects, and capacity</p>
+                <div class="topbar-left">
+                    <button id="btn-mobile-menu" class="btn-mobile-menu" onclick="app.toggleSidebar()" aria-label="Open Navigation Menu">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 id="page-title" class="page-title">Personal Dashboard</h1>
+                        <p id="page-subtitle" class="page-subtitle">Track your focus, tasks, projects, and capacity</p>
+                    </div>
                 </div>
 
                 <div class="topbar-right">
@@ -603,6 +625,20 @@
             this.presetDate = null;
         }
 
+        toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sidebar-overlay');
+            if (sb) sb.classList.toggle('open');
+            if (ov) ov.classList.toggle('active');
+        }
+
+        closeSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sidebar-overlay');
+            if (sb) sb.classList.remove('open');
+            if (ov) ov.classList.remove('active');
+        }
+
         async init() {
             this.initClock();
             await this.loadSettings();
@@ -615,6 +651,7 @@
                     this.closeProjectModal();
                     this.closeSettingsModal();
                     this.closeConfirmModal();
+                    this.closeSidebar();
                 }
             });
         }
@@ -731,6 +768,7 @@
         // Navigation
         // ---------------------------------------------------------------------
         navigate(viewId) {
+            this.closeSidebar();
             this.activeView = viewId;
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             const btn = document.getElementById(`nav-btn-${viewId}`);
@@ -1686,6 +1724,7 @@
         // Settings & Confirm Dialogs
         // ---------------------------------------------------------------------
         openSettingsModal() {
+            this.closeSidebar();
             document.getElementById('settings-modal-cap').value = this.settings.dailyCapacityHours;
             document.getElementById('modal-settings').classList.add('active');
         }
