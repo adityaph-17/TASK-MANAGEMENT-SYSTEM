@@ -448,8 +448,8 @@
 
                     <div class="form-row">
                         <div class="form-group flex-1">
-                            <label for="task-deadline">Deadline</label>
-                            <input type="date" id="task-deadline" class="form-input">
+                            <label for="task-deadline">Deadline *</label>
+                            <input type="date" id="task-deadline" class="form-input" required>
                         </div>
                         <div class="form-group flex-1">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
@@ -1741,11 +1741,8 @@
             document.getElementById('task-hours').value = '1h';
             this.updateHoursPreview();
             document.getElementById('task-category').value = 'Study';
-
-            if (this.presetDate) {
-                document.getElementById('task-deadline').value = this.presetDate;
-                this.presetDate = null;
-            }
+            document.getElementById('task-deadline').value = this.presetDate || this.fmtDate(new Date());
+            this.presetDate = null;
 
             this.populateProjectSelects();
             document.getElementById('modal-task').classList.add('active');
@@ -1763,7 +1760,7 @@
             document.getElementById('task-notes').value = t.notes || '';
             document.getElementById('task-priority').value = t.priority;
             document.getElementById('task-status').value = t.status;
-            document.getElementById('task-deadline').value = t.deadline ? t.deadline.substr(0, 10) : '';
+            document.getElementById('task-deadline').value = t.deadline ? t.deadline.substr(0, 10) : this.fmtDate(new Date());
             document.getElementById('task-hours').value = this.fmtHours(t.estimatedHours || 1.0);
             this.updateHoursPreview();
             document.getElementById('task-category').value = t.category || 'Study';
@@ -1798,6 +1795,19 @@
 
             if (!title) {
                 this.toast('Task title is required.', 'error');
+                document.getElementById('task-title').focus();
+                return;
+            }
+
+            if (!deadline) {
+                this.toast('Deadline date is required.', 'error');
+                document.getElementById('task-deadline').focus();
+                return;
+            }
+
+            if (!rawHours.trim() || isNaN(estimatedHours) || estimatedHours <= 0) {
+                this.toast('Estimated time is required.', 'error');
+                document.getElementById('task-hours').focus();
                 return;
             }
 
