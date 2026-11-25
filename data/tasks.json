@@ -95,6 +95,30 @@
       "id": "act_1792593009_6",
       "message": "Daily capacity updated to 3.00h",
       "timestamp": "2026-10-21T20:00:09"
+    },
+    {
+      "entityId": "tsk_1792592896_191960",
+      "entityType": "Task",
+      "eventType": "TASK_COMPLETED",
+      "id": "act_1795572490_1",
+      "message": "Task 'srp checking' set to Completed",
+      "timestamp": "2026-11-25T07:38:10"
+    },
+    {
+      "entityId": "tsk_1792592896_191960",
+      "entityType": "Task",
+      "eventType": "STATUS_CHANGED",
+      "id": "act_1795572493_2",
+      "message": "Task 'srp checking' set to Pending",
+      "timestamp": "2026-11-25T07:38:13"
+    },
+    {
+      "entityId": "tsk_1792592896_191960",
+      "entityType": "Task",
+      "eventType": "TASK_DELETED",
+      "id": "act_1795572504_3",
+      "message": "Deleted task: srp checking",
+      "timestamp": "2026-11-25T07:38:24"
     }
   ],
   "projects": [
@@ -131,25 +155,6 @@
       "tags": [],
       "title": "cpp project",
       "updatedAt": "2026-10-21T19:30:21"
-    },
-    {
-      "category": "Study",
-      "completedAt": "",
-      "createdAt": "2026-10-21T19:58:16",
-      "deadline": "2026-10-22",
-      "description": "",
-      "estimatedHours": 1.1,
-      "id": "tsk_1792592896_191960",
-      "isDueToday": false,
-      "isOverdue": false,
-      "notes": "",
-      "priority": "Critical",
-      "projectId": "",
-      "startDate": "",
-      "status": "In Progress",
-      "tags": [],
-      "title": "srp checking",
-      "updatedAt": "2026-10-21T19:59:16"
     }
   ]
 }
