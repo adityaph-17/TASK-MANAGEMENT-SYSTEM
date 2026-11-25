@@ -163,4 +163,12 @@ public:
         }
         return result;
     }
+
+    void reloadProjects(const std::vector<Project>& newProjects) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        projects_ = newProjects;
+        if (storage_) {
+            storage_->saveProjects(projects_);
+        }
+    }
 };

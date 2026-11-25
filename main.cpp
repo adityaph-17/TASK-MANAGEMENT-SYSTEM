@@ -657,6 +657,79 @@ int main(int argc, char* argv[]) {
         }
     });
 
+    // -------------------------------------------------------------------------
+    // Persistent Cloud Vault / Synchronization API
+    // (Prevents data loss on ephemeral free tiers like Render when sleeping)
+    // -------------------------------------------------------------------------
+
+    // GET /api/sync
+    CROW_ROUTE(app, "/api/sync")
+    .methods("GET"_method)
+    ([&taskManager, &projectManager, &activityLog, &settings]() {
+        nlohmann::json root;
+        nlohmann::json taskList = nlohmann::json::array();
+        for (const auto& t : taskManager.getTasks()) {
+            taskList.push_back(t.toJson());
+        }
+
+        nlohmann::json projList = nlohmann::json::array();
+        for (const auto& p : projectManager.getProjects()) {
+            projList.push_back(p.toJson());
+        }
+
+        nlohmann::json actList = nlohmann::json::array();
+        for (const auto& a : activityLog.getAll()) {
+            actList.push_back(a.toJson());
+        }
+
+        root["tasks"] = taskList;
+        root["projects"] = projList;
+        root["activities"] = actList;
+        root["settings"] = settings.toJson();
+        root["serverTime"] = std::time(nullptr);
+        return makeJsonResponse(200, root);
+    });
+
+    // POST /api/sync
+    CROW_ROUTE(app, "/api/sync")
+    .methods("POST"_method)
+    ([&taskManager, &projectManager, &activityLog, &settings, &storage](const crow::request& req) {
+        try {
+            auto body = nlohmann::json::parse(req.body);
+            if (body.contains("tasks") && body["tasks"].is_array()) {
+                std::vector<Task> newTasks;
+                for (const auto& item : body["tasks"]) {
+                    newTasks.push_back(Task::fromJson(item));
+                }
+                taskManager.reloadTasks(newTasks);
+            }
+            if (body.contains("projects") && body["projects"].is_array()) {
+                std::vector<Project> newProjs;
+                for (const auto& item : body["projects"]) {
+                    newProjs.push_back(Project::fromJson(item));
+                }
+                projectManager.reloadProjects(newProjs);
+            }
+            if (body.contains("settings") && body["settings"].is_object()) {
+                settings = Settings::fromJson(body["settings"]);
+                storage->saveSettings(settings);
+            }
+            if (body.contains("activities") && body["activities"].is_array()) {
+                std::vector<ActivityEvent> newActs;
+                for (const auto& item : body["activities"]) {
+                    newActs.push_back(ActivityEvent::fromJson(item));
+                }
+                activityLog.reloadActivities(newActs);
+            }
+            return makeJsonResponse(200, {
+                {"success", true},
+                {"message", "Database successfully synchronized and persisted"}
+            });
+        } catch (const std::exception& e) {
+            return makeErrorResponse(500, e.what());
+        }
+    });
+
     std::cout << "[Server] TaskFlow running on http://localhost:" << port << std::endl;
     std::cout << "[Server] Serving index.html and style.css" << std::endl;
 

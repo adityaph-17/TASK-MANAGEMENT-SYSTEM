@@ -452,8 +452,11 @@
                             <input type="date" id="task-deadline" class="form-input">
                         </div>
                         <div class="form-group flex-1">
-                            <label for="task-hours">Estimated Hours *</label>
-                            <input type="number" id="task-hours" class="form-input" min="0.1" max="100.0" step="0.5" value="1.0" required>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <label for="task-hours" style="margin-bottom:0;">Estimated Time *</label>
+                                <span id="task-hours-preview" style="font-size: 11px; color: var(--color-primary, #245c4a); font-weight: 600;">1h 0m</span>
+                            </div>
+                            <input type="text" id="task-hours" class="form-input" placeholder="e.g. 1.5, 1h 30m, 45m, 2h" value="1h" oninput="app.updateHoursPreview()" required>
                         </div>
                     </div>
 
@@ -554,7 +557,7 @@
     <div id="modal-settings" class="modal-backdrop" aria-hidden="true">
         <div class="modal-dialog modal-dialog-sm">
             <div class="modal-header">
-                <h3 class="modal-title">Workload Settings</h3>
+                <h3 class="modal-title">Workload & Persistence</h3>
                 <button class="modal-close-btn" onclick="app.closeSettingsModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -564,6 +567,24 @@
                     <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
                         The Workload Analyzer compares scheduled hours to this limit to warn you of potential bottlenecks.
                     </p>
+                </div>
+
+                <div class="form-group" style="border-top: 1px solid var(--border); padding-top: 14px; margin-top: 8px;">
+                    <label>Data Backup & Persistence</label>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">
+                        Your tasks are automatically preserved in your phone/browser storage across server sleep cycles. You can also export or import anytime:
+                    </p>
+                    <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-secondary" onclick="app.exportBackup()" style="flex:1;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Export</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('file-import-input').click()" style="flex:1;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>Import</span>
+                        </button>
+                        <input type="file" id="file-import-input" accept=".json" style="display:none;" onchange="app.importBackup(event)">
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -641,6 +662,7 @@
 
         async init() {
             this.initClock();
+            await this.syncWithServer();
             await this.loadSettings();
             await this.refresh();
             this.navigate('dashboard');
@@ -654,6 +676,99 @@
                     this.closeSidebar();
                 }
             });
+        }
+
+        async syncWithServer() {
+            const VAULT_KEY = 'taskflow_permanent_vault';
+            try {
+                const localVault = JSON.parse(localStorage.getItem(VAULT_KEY) || 'null');
+                const serverSnapshot = await this.req('/sync');
+
+                if (localVault && localVault.tasks && localVault.tasks.length > 0) {
+                    const serverTasks = serverSnapshot.tasks || [];
+                    const localTasks = localVault.tasks;
+                    const serverTaskCount = serverTasks.length;
+                    const localTaskCount = localTasks.length;
+
+                    // Check if Render woke up with an empty/reset container disk:
+                    const missingOnServer = localTasks.some(lt => !serverTasks.some(st => st.id === lt.id));
+
+                    if (missingOnServer || localTaskCount > serverTaskCount) {
+                        console.log('[Auto-Persistence] Render restarted. Restoring tasks from phone vault to cloud...');
+                        await this.req('/sync', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                tasks: localVault.tasks,
+                                projects: localVault.projects || [],
+                                settings: localVault.settings || { dailyCapacityHours: 6.0 },
+                                activities: localVault.activities || []
+                            })
+                        });
+                        this.toast('Tasks automatically restored from phone storage!', 'success');
+                        return;
+                    }
+                }
+
+                if (serverSnapshot && serverSnapshot.tasks) {
+                    this.saveLocalVault(serverSnapshot);
+                }
+            } catch (err) {
+                console.warn('Auto-sync check error:', err);
+            }
+        }
+
+        saveLocalVault(snapshot = null) {
+            const VAULT_KEY = 'taskflow_permanent_vault';
+            const vault = {
+                tasks: snapshot ? snapshot.tasks : this.tasks,
+                projects: snapshot ? snapshot.projects : this.projects,
+                settings: snapshot ? snapshot.settings : this.settings,
+                activities: snapshot ? snapshot.activities : this.activities,
+                savedAt: Date.now()
+            };
+            try {
+                localStorage.setItem(VAULT_KEY, JSON.stringify(vault));
+            } catch (e) {
+                console.warn('LocalStorage save error:', e);
+            }
+        }
+
+        async exportBackup() {
+            try {
+                const snapshot = await this.req('/sync');
+                const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `taskflow_backup_${this.fmtDate(new Date())}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                this.toast('Backup downloaded successfully', 'success');
+            } catch (e) {
+                this.toast('Export failed: ' + e.message, 'error');
+            }
+        }
+
+        async importBackup(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                await this.req('/sync', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                this.saveLocalVault(data);
+                this.toast('Backup imported and synced successfully!', 'success');
+                this.closeSettingsModal();
+                await this.refresh();
+            } catch (err) {
+                this.toast('Invalid JSON backup file: ' + err.message, 'error');
+            }
+            e.target.value = '';
         }
 
         initClock() {
@@ -677,6 +792,67 @@
         esc(s) {
             if (!s) return '';
             return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        fmtHours(hours) {
+            if (!hours || isNaN(hours)) return '0m';
+            const totalMinutes = Math.round(hours * 60);
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            if (h === 0) return `${m}m`;
+            if (m === 0) return `${h}h`;
+            return `${h}h ${m}m`;
+        }
+
+        parseTimeInput(input) {
+            if (!input) return 1.0;
+            const str = String(input).trim().toLowerCase();
+
+            // 1. Colon format: "1:30" -> 1.5 hrs, "0:45" -> 0.75 hrs
+            const colonMatch = str.match(/^(\d+):([0-5]?\d)$/);
+            if (colonMatch) {
+                const h = parseInt(colonMatch[1], 10);
+                const m = parseInt(colonMatch[2], 10);
+                return Math.max(0.02, Math.round((h + m / 60) * 100) / 100);
+            }
+
+            // 2. Combined format: "1h 30m", "1 hr 30 min", "1 hour 45 mins", "2 hours 15 minutes"
+            const hrMinMatch = str.match(/(?:(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours))(?:\s*(?:and\s*)?(\d+(?:\.\d+)?)\s*(?:m|min|mins|minute|minutes))?/);
+            if (hrMinMatch) {
+                const h = parseFloat(hrMinMatch[1]) || 0;
+                const m = parseFloat(hrMinMatch[2]) || 0;
+                return Math.max(0.02, Math.round((h + m / 60) * 100) / 100);
+            }
+
+            // 3. Minutes only: "45m", "30 min", "90 minutes", "15 mins"
+            const minMatch = str.match(/^(\d+(?:\.\d+)?)\s*(?:m|min|mins|minute|minutes)$/);
+            if (minMatch) {
+                const m = parseFloat(minMatch[1]) || 0;
+                return Math.max(0.02, Math.round((m / 60) * 100) / 100);
+            }
+
+            // 4. Plain decimal/number: "1.5", "2", "0.75", "1.5h", "2h", "1.5 hrs"
+            const numMatch = str.match(/^(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours)?$/);
+            if (numMatch) {
+                const val = parseFloat(numMatch[1]) || 1.0;
+                return Math.max(0.02, Math.min(100.0, Math.round(val * 100) / 100));
+            }
+
+            const fallback = parseFloat(str);
+            return isNaN(fallback) ? 1.0 : Math.max(0.02, Math.min(100.0, fallback));
+        }
+
+        updateHoursPreview() {
+            const el = document.getElementById('task-hours');
+            const preview = document.getElementById('task-hours-preview');
+            if (!el || !preview) return;
+            const val = el.value.trim();
+            if (!val) {
+                preview.textContent = '--';
+                return;
+            }
+            const parsed = this.parseTimeInput(val);
+            preview.textContent = `${this.fmtHours(parsed)} (${parsed}h)`;
         }
 
         async req(endpoint, opts = {}) {
@@ -707,6 +883,7 @@
                 ]);
                 this.updateBadges();
                 this.renderAlerts();
+                this.saveLocalVault();
             } catch (e) {
                 console.warn('Initial refresh warning:', e);
             }
@@ -901,7 +1078,7 @@
                     <div class="hero-meta-row">
                         <span class="badge badge-${t.priority.toLowerCase()}">${t.priority} Priority</span>
                         <span class="badge badge-sage">${this.esc(t.category)}</span>
-                        <span class="badge badge-sage">⏱ ${t.estimatedHours}h</span>
+                        <span class="badge badge-sage">⏱ ${this.fmtHours(t.estimatedHours)}</span>
                         <span class="badge ${t.isOverdue ? 'badge-danger' : 'badge-warning'}">
                             ${t.isOverdue ? 'Overdue: ' + t.deadline : (t.deadline ? 'Deadline: ' + t.deadline : 'No Deadline')}
                         </span>
@@ -938,7 +1115,7 @@
                         <div class="mini-item" onclick="app.openTaskForEdit('${t.id}')">
                             <div>
                                 <div class="mini-item-title">${this.esc(t.title)}</div>
-                                <div class="mini-item-meta">${t.deadline || 'No deadline'} • ${t.estimatedHours}h</div>
+                                <div class="mini-item-meta">${t.deadline || 'No deadline'} • ${this.fmtHours(t.estimatedHours)}</div>
                             </div>
                             <span class="badge badge-${t.priority.toLowerCase()}">${t.priority}</span>
                         </div>
@@ -956,7 +1133,7 @@
                         <div class="mini-item" onclick="app.openTaskForEdit('${t.id}')">
                             <div>
                                 <div class="mini-item-title">${this.esc(t.title)}</div>
-                                <div class="mini-item-meta">Due: ${t.deadline} (${t.estimatedHours}h)</div>
+                                <div class="mini-item-meta">Due: ${t.deadline} (${this.fmtHours(t.estimatedHours)})</div>
                             </div>
                             <span class="badge badge-sage">${t.status}</span>
                         </div>
@@ -1026,7 +1203,7 @@
                             <div style="font-size: 12px; font-family: var(--font-mono); color: ${t.isOverdue ? 'var(--priority-critical)' : 'inherit'};">
                                 ${t.isOverdue ? '⚠️ ' : ''}${t.deadline || 'No deadline'}
                             </div>
-                            <span style="font-size: 11px; color: var(--text-secondary);">⏱ ${t.estimatedHours}h</span>
+                            <span style="font-size: 11px; color: var(--text-secondary);">⏱ ${this.fmtHours(t.estimatedHours)}</span>
                         </div>
                         <div class="action-btn-group">
                             <button class="btn-row-action" onclick="app.openTaskForEdit('${t.id}')" title="Edit">
@@ -1419,7 +1596,7 @@
                 <div class="mini-item" onclick="app.openTaskForEdit('${t.id}')">
                     <div>
                         <div class="mini-item-title">${this.esc(t.title)}</div>
-                        <div class="mini-item-meta">${t.status} • ⏱ ${t.estimatedHours}h</div>
+                        <div class="mini-item-meta">${t.status} • ⏱ ${this.fmtHours(t.estimatedHours)}</div>
                     </div>
                     <span class="badge badge-${t.priority.toLowerCase()}">${t.priority}</span>
                 </div>
@@ -1561,7 +1738,8 @@
             document.getElementById('form-task').reset();
             document.getElementById('task-priority').value = 'Medium';
             document.getElementById('task-status').value = 'Pending';
-            document.getElementById('task-hours').value = '1.0';
+            document.getElementById('task-hours').value = '1h';
+            this.updateHoursPreview();
             document.getElementById('task-category').value = 'Study';
 
             if (this.presetDate) {
@@ -1586,7 +1764,8 @@
             document.getElementById('task-priority').value = t.priority;
             document.getElementById('task-status').value = t.status;
             document.getElementById('task-deadline').value = t.deadline ? t.deadline.substr(0, 10) : '';
-            document.getElementById('task-hours').value = t.estimatedHours || 1.0;
+            document.getElementById('task-hours').value = this.fmtHours(t.estimatedHours || 1.0);
+            this.updateHoursPreview();
             document.getElementById('task-category').value = t.category || 'Study';
             document.getElementById('task-tags').value = (t.tags || []).join(', ');
 
@@ -1610,7 +1789,8 @@
             const priority = document.getElementById('task-priority').value;
             const status = document.getElementById('task-status').value;
             const deadline = document.getElementById('task-deadline').value;
-            const estimatedHours = parseFloat(document.getElementById('task-hours').value) || 1.0;
+            const rawHours = document.getElementById('task-hours').value;
+            const estimatedHours = this.parseTimeInput(rawHours);
             const category = document.getElementById('task-category').value.trim() || 'General';
             const projectId = document.getElementById('task-project').value;
             const rawTags = document.getElementById('task-tags').value;

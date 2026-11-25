@@ -54,4 +54,17 @@ public:
         }
         return result;
     }
+
+    std::vector<ActivityEvent> getAll() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return events_;
+    }
+
+    void reloadActivities(const std::vector<ActivityEvent>& newEvents) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        events_ = newEvents;
+        if (storage_) {
+            storage_->saveActivities(events_);
+        }
+    }
 };

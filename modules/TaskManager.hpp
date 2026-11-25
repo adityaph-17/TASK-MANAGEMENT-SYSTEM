@@ -259,4 +259,12 @@ public:
             storage_->saveTasks(tasks_);
         }
     }
+
+    void reloadTasks(const std::vector<Task>& newTasks) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        tasks_ = newTasks;
+        if (storage_) {
+            storage_->saveTasks(tasks_);
+        }
+    }
 };

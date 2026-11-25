@@ -351,8 +351,8 @@ public:
         if (title_.empty()) {
             throw ValidationException("Task title cannot be empty.");
         }
-        if (!inRange(estimatedHours_, 0.1, 100.0)) {
-            throw ValidationException("Estimated completion time must be between 0.1 and 100 hours.");
+        if (!inRange(estimatedHours_, 0.01, 100.0)) {
+            throw ValidationException("Estimated completion time must be between 0.01 and 100 hours.");
         }
     }
 
