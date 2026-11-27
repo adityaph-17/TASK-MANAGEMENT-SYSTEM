@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="description" content="TaskFlow - Smart Personal Task Management System with C++17 OOP Backend, Rule-Based Planner, and Workload Capacity Tracking">
+    <meta name="description" content="TaskFlow - Smart Personal Task & Project Management System with Intelligent Priority Planner and Daily Workload Tracking">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TaskFlow">
@@ -26,7 +26,7 @@
                     </div>
                     <div>
                         <div class="brand-name">TaskFlow</div>
-                        <div class="brand-tag">Personal Edition • C++17</div>
+                        <div class="brand-tag">Personal Productivity</div>
                     </div>
                 </div>
                 <button id="btn-sidebar-close" class="btn-sidebar-close" onclick="app.closeSidebar()" aria-label="Close Navigation">
@@ -73,7 +73,7 @@
             <div class="sidebar-footer">
                 <div class="server-status">
                     <span class="status-dot"></span>
-                    <span>C++ Server: Active</span>
+                    <span id="server-status-label">Server Connected</span>
                 </div>
                 <button class="btn-sidebar-settings" onclick="app.openSettingsModal()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -423,7 +423,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="task-title">Task Title *</label>
-                        <input type="text" id="task-title" class="form-input" placeholder="e.g., Prepare viva presentation" required>
+                        <input type="text" id="task-title" class="form-input" placeholder="e.g., Review project proposal, Doctor appointment, Buy groceries" required>
                     </div>
 
                     <div class="form-row">
@@ -463,13 +463,14 @@
                     <div class="form-row">
                         <div class="form-group flex-1">
                             <label for="task-category">Category</label>
-                            <input type="text" id="task-category" class="form-input" list="cat-list" value="Study">
+                            <input type="text" id="task-category" class="form-input" list="cat-list" value="General">
                             <datalist id="cat-list">
-                                <option value="Study">
+                                <option value="General">
                                 <option value="Work">
                                 <option value="Personal">
                                 <option value="Health">
-                                <option value="Urgent">
+                                <option value="Finance">
+                                <option value="Study">
                             </datalist>
                         </div>
                         <div class="form-group flex-1">
@@ -482,7 +483,7 @@
 
                     <div class="form-group">
                         <label for="task-tags">Tags (comma separated)</label>
-                        <input type="text" id="task-tags" class="form-input" placeholder="e.g. c++, college, viva">
+                        <input type="text" id="task-tags" class="form-input" placeholder="e.g., urgent, review, home, team">
                     </div>
 
                     <div class="form-group">
@@ -515,13 +516,21 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="project-title">Project Title *</label>
-                        <input type="text" id="project-title" class="form-input" placeholder="e.g., Semester 4 OOP Mini Project" required>
+                        <input type="text" id="project-title" class="form-input" placeholder="e.g., Website Redesign, Annual Planning, Fitness Goals" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group flex-1">
                             <label for="project-category">Category</label>
-                            <input type="text" id="project-category" class="form-input" value="Academic">
+                            <input type="text" id="project-category" class="form-input" list="proj-cat-list" value="General">
+                            <datalist id="proj-cat-list">
+                                <option value="General">
+                                <option value="Work">
+                                <option value="Personal">
+                                <option value="Finance">
+                                <option value="Health">
+                                <option value="Academic">
+                            </datalist>
                         </div>
                         <div class="form-group flex-1">
                             <label for="project-deadline">Target Deadline</label>
@@ -542,7 +551,7 @@
 
                     <div class="form-group">
                         <label for="project-desc">Description</label>
-                        <textarea id="project-desc" class="form-textarea" rows="3" placeholder="Goals, scope, or milestones..."></textarea>
+                        <textarea id="project-desc" class="form-textarea" rows="3" placeholder="Goals, scope, key deliverables, or notes..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -585,6 +594,11 @@
                         </button>
                         <input type="file" id="file-import-input" accept=".json" style="display:none;" onchange="app.importBackup(event)">
                     </div>
+
+                    <button type="button" class="btn btn-secondary" onclick="app.confirmResetAllData()" style="width:100%; margin-top:10px; color: var(--color-danger, #c0392b); border-color: rgba(192, 57, 43, 0.35);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        <span>Clear All Data / Fresh Start</span>
+                    </button>
                 </div>
             </div>
             <div class="modal-footer">
@@ -681,7 +695,33 @@
         async syncWithServer() {
             const VAULT_KEY = 'taskflow_permanent_vault';
             try {
-                const localVault = JSON.parse(localStorage.getItem(VAULT_KEY) || 'null');
+                let localVault = JSON.parse(localStorage.getItem(VAULT_KEY) || 'null');
+
+                // Sanitize legacy dev fixtures from mobile cache so they don't re-upload
+                if (localVault) {
+                    if (Array.isArray(localVault.tasks)) {
+                        localVault.tasks = localVault.tasks.filter(t => {
+                            const tl = (t.title || '').toLowerCase();
+                            return !tl.includes('cpp project') && !tl.includes('srp checking');
+                        });
+                    }
+                    if (Array.isArray(localVault.projects)) {
+                        localVault.projects = localVault.projects.filter(p => {
+                            const pt = (p.title || '').toLowerCase();
+                            return !pt.includes('oop') && !pt.includes('semester 4');
+                        });
+                    }
+                    if (Array.isArray(localVault.activities)) {
+                        localVault.activities = localVault.activities.filter(a => {
+                            const msg = (a.message || '').toLowerCase();
+                            return !msg.includes('cpp project') && !msg.includes('srp checking') && !msg.includes('oop');
+                        });
+                    }
+                    try {
+                        localStorage.setItem(VAULT_KEY, JSON.stringify(localVault));
+                    } catch (e) {}
+                }
+
                 const serverSnapshot = await this.req('/sync');
 
                 if (localVault && localVault.tasks && localVault.tasks.length > 0) {
@@ -769,6 +809,34 @@
                 this.toast('Invalid JSON backup file: ' + err.message, 'error');
             }
             e.target.value = '';
+        }
+
+        confirmResetAllData() {
+            this.confirm('Clear All Data', 'Are you sure you want to delete all tasks, projects, and history for a fresh start? This action cannot be undone.', async () => {
+                try {
+                    const emptyState = {
+                        tasks: [],
+                        projects: [],
+                        activities: [],
+                        settings: { dailyCapacityHours: 6.0 }
+                    };
+                    await this.req('/sync', {
+                        method: 'POST',
+                        body: JSON.stringify(emptyState)
+                    });
+                    const VAULT_KEY = 'taskflow_permanent_vault';
+                    localStorage.removeItem(VAULT_KEY);
+                    this.tasks = [];
+                    this.projects = [];
+                    this.activities = [];
+                    this.settings = { dailyCapacityHours: 6.0 };
+                    this.toast('All data cleared. Welcome to a fresh workspace!', 'info');
+                    this.closeSettingsModal();
+                    await this.refresh();
+                } catch (e) {
+                    this.toast('Reset failed: ' + e.message, 'error');
+                }
+            });
         }
 
         initClock() {
@@ -1266,7 +1334,7 @@
             const sel = document.getElementById('task-filter-category');
             if (!sel) return;
             const cur = sel.value;
-            const set = new Set(['Study', 'Work', 'Personal', 'Health', 'Urgent']);
+            const set = new Set(['General', 'Work', 'Personal', 'Health', 'Finance', 'Study']);
             for (const t of this.tasks) {
                 if (t.category) set.add(t.category);
             }
@@ -1740,7 +1808,7 @@
             document.getElementById('task-status').value = 'Pending';
             document.getElementById('task-hours').value = '1h';
             this.updateHoursPreview();
-            document.getElementById('task-category').value = 'Study';
+            document.getElementById('task-category').value = 'General';
             document.getElementById('task-deadline').value = this.presetDate || this.fmtDate(new Date());
             this.presetDate = null;
 
@@ -1763,7 +1831,7 @@
             document.getElementById('task-deadline').value = t.deadline ? t.deadline.substr(0, 10) : this.fmtDate(new Date());
             document.getElementById('task-hours').value = this.fmtHours(t.estimatedHours || 1.0);
             this.updateHoursPreview();
-            document.getElementById('task-category').value = t.category || 'Study';
+            document.getElementById('task-category').value = t.category || 'General';
             document.getElementById('task-tags').value = (t.tags || []).join(', ');
 
             this.populateProjectSelects();
@@ -1845,7 +1913,7 @@
             document.getElementById('project-id').value = '';
             document.getElementById('modal-project-title').textContent = 'Create Project';
             document.getElementById('form-project').reset();
-            document.getElementById('project-category').value = 'Academic';
+            document.getElementById('project-category').value = 'General';
             document.getElementById('project-color').value = '#245C4A';
             document.getElementById('modal-project').classList.add('active');
             document.getElementById('project-title').focus();
@@ -1858,7 +1926,7 @@
             document.getElementById('project-id').value = p.id;
             document.getElementById('modal-project-title').textContent = 'Edit Project';
             document.getElementById('project-title').value = p.title;
-            document.getElementById('project-category').value = p.category || 'Academic';
+            document.getElementById('project-category').value = p.category || 'General';
             document.getElementById('project-deadline').value = p.deadline ? p.deadline.substr(0, 10) : '';
             document.getElementById('project-color').value = p.colorHex || '#245C4A';
             document.getElementById('project-desc').value = p.description || '';

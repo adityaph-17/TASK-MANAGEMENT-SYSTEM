@@ -241,6 +241,12 @@ body {
     border-bottom: 1px solid var(--border);
 }
 
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .page-title {
     font-size: 20px;
     font-weight: 700;
