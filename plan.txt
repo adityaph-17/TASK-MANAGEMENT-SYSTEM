@@ -136,6 +136,7 @@ TaskFlow/
 ├── style.css               # Shared CSS stylesheet (warm sage & forest green theme)
 ├── main.cpp                # Server entrypoint and Crow REST API route definitions
 ├── Makefile                # Clean build target using clang++ -std=c++17
+├── Dockerfile              # Multi-stage Linux container build for cloud deployment (Render)
 │
 ├── modules/
 │   ├── Models.hpp          # Entity base class, Task, Project, ActivityEvent, Settings
@@ -230,6 +231,8 @@ Rescheduling & Settings:
 - POST   /api/reschedule-suggestions/<id>/accept
 - GET    /api/settings
 - PUT    /api/settings
+- GET    /api/sync
+- POST   /api/sync
 
 
 9. DATA STORAGE AND PERSISTENCE
@@ -264,6 +267,8 @@ Phase 3: Crow REST server in `main.cpp` and Makefile.
 Phase 4: Frontend in `index.html` (with embedded JS) and `style.css` (warm sage theme).
 Phase 5: Verification testing of all endpoints, CRUD operations, planner, and persistence.
 Phase 6: Final documentation in `README.md` with viva guide and class diagram.
+Phase 7: Cloud deployment via Docker (Render), dynamic $PORT binding, ephemeral vault
+         persistence (/api/sync), natural time input parsing, and mobile-responsive drawer.
 
 
 12. TESTING STRATEGY
