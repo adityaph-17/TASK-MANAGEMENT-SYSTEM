@@ -10,7 +10,6 @@
 
 > **TaskFlow** is a modern, high-performance personal productivity and workload management system engineered in **modern C++17** using the **Crow microframework**. It unites clean Object-Oriented Programming (OOP) design patterns with a calm, mobile-responsive **HTML5/CSS3/ES6 single-page web app**, containerized with **Docker** and deployed live to the cloud.
 
-🔗 **Live Web Application**: [https://task-management-system-58cy.onrender.com](https://task-management-system-58cy.onrender.com)
 
 ---
 
@@ -664,4 +663,3 @@ Cloud free tiers (such as Render) deploy containers on ephemeral disk partitions
 ---
 
 **Developed by**: Aditya Halne  
-**Live Application**: [https://task-management-system-58cy.onrender.com](https://task-management-system-58cy.onrender.com)
